@@ -1,13 +1,24 @@
-version: '3.9'
+version: '3'
+
 services:
-  web:
-    # For nextjs app
-    
-    build: .
+  mlab-client:
+    container_name: mlab-client
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENV_VARIABLE: ${ENV_VARIABLE}
+        NEXT_PUBLIC_ENV_VARIABLE: ${NEXT_PUBLIC_ENV_VARIABLE}
+    restart: always
     ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-    command: npm run start
+      - 3000:3000
+    networks:
+      - mlab_client_net
 
+  # Add more containers below (nginx, postgres, etc.)
 
+# Define a network, which allows containers to communicate
+# with each other, by using their container name as a hostname
+networks:
+  mlab_client_net:
+    external: true
