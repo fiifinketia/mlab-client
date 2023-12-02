@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { ResultInfo } from "../../../components/results/results-info";
 
-const resultinfo = () => {
+const Result = () => {
     const router = useRouter();
     const [resultId] = router.query.id as string[];
     return (
@@ -12,8 +12,8 @@ const resultinfo = () => {
     )
 }
 
-resultinfo.getInitialProps = async (ctx: any) => {
+Result.getInitialProps = async (ctx: any) => {
     return { resultId: ctx.query.id[0] };
 }
 
-export default resultinfo;
+export default Result;

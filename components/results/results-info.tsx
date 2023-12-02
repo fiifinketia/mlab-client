@@ -47,7 +47,7 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 			setLoading(false);
 		};
 		getResult();
-	}, []);
+	}, [resultId]);
 
 	return (
 		<div>

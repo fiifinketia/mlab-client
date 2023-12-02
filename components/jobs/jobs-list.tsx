@@ -311,6 +311,7 @@ const TrainModelModal = ({
 												Object.entries(defaultParams).map((param: any) => (														<div>
 														<Input
 															label={param[0]}
+															key={param[0]}
 															variant="bordered"
 															required
 															value={param[1]}

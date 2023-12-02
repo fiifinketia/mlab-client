@@ -24,7 +24,7 @@ export const ModelsList = ({ filter } : { filter : string }) => {
                 return true;
         });
         setModels(filteredModels);
-    }, [filter]);
+    }, [filter, models]);
 
     return (
         <div>

@@ -123,6 +123,7 @@ export const AddJob = () => {
 													// Default parameters is an object of [string, Any]
 													Object.entries(defaultParams).map((param: any) => (														<div>
 															<Input
+																key={param[0]}
 																label={param[0]}
 																variant="bordered"
 																required
