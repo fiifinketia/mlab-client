@@ -7,30 +7,66 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	Progress,
 	Switch,
 	Textarea,
 	useDisclosure,
 } from "@nextui-org/react";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
+import axios, { AxiosRequestConfig } from "axios";
 
 export const AddDataset = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const { user } = useUser();
-	const router = useRouter();
 	const [datasetName, setDatasetName] = useState("");
 	const [datasetDescription, setDatasetDescription] = useState("");
 	const [isPrivate, setIsPrivate] = useState(false);
-
-	const handleSubmit = () => {
-		onOpenChange();
-		// router.reload();
-		// Wait for the dataset to be uploaded for refreshing
-		// Warn user to wait for the dataset to be uploaded
-		// TODO: Add loading indicator
-	};
+	const [isLoading, setIsLoading] = useState(false);
+	const [progress, setProgress] = useState(0);
+	const ref = React.useRef<HTMLInputElement>(null);
 
 	const upload_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets`;
+	const handleFileUpload = () => new Promise(async (resolve) => {
+		onOpenChange();
+		setProgress(0)
+		setIsLoading(true)
+		if(ref.current?.files){
+			const file = ref.current.files[0]
+			const data = new FormData()
+			data.append('file', file)
+			data.append('name', datasetName)
+			data.append('description', datasetDescription)
+			data.append('private', String(isPrivate))
+			data.append('owner_id', user?.email || "")
+
+	
+			const config: AxiosRequestConfig = {
+				headers: { 
+					'content-type': 'multipart/form-data',
+					'Filename': file.name
+			 	},
+				onUploadProgress: (event: any) => {
+					const p = Math.round((event.loaded * 100) / event.total);
+					setProgress(p)
+					if (p === 100) {
+						setIsLoading(false)
+						onOpenChange()
+						window.location.reload()
+					}
+				},
+				
+			}
+	
+			try{
+				const response = await axios.post(upload_url, data, config)
+				resolve(response)
+			}
+			catch(err){
+				console.log(err)
+			}
+	   }
+	})
+
 	return (
 		<div>
 			<>
@@ -44,13 +80,7 @@ export const AddDataset = () => {
 				>
 					<ModalContent>
 						{(onClose) => (
-							<form
-								action={upload_url}
-								encType="multipart/form-data"
-								method="post"
-								target="submit_file"
-								onSubmitCapture={handleSubmit}
-							>
+							<form>
 								<ModalHeader className="flex flex-col gap-1">
 									Add Datasets
 								</ModalHeader>
@@ -82,6 +112,7 @@ export const AddDataset = () => {
 										isRequired
 										name="file"
 										type="file"
+										ref={ref}
 									/>
 									<Switch
 										name="private"
@@ -93,7 +124,7 @@ export const AddDataset = () => {
 									<Button color="danger" variant="flat" onClick={onClose}>
 										Close
 									</Button>
-									<Button color="primary" type="submit">
+									<Button color="primary" type="button" onClick={handleFileUpload}>
 										Add Dataset
 									</Button>
 								</ModalFooter>
@@ -101,7 +132,35 @@ export const AddDataset = () => {
 						)}
 					</ModalContent>
 				</Modal>
-				<iframe name="submit_file" style={{ display: "none" }}></iframe>
+				{
+					isLoading && (
+						<Modal
+							isOpen={isLoading}
+							onOpenChange={() => setIsLoading(false)}
+							placement="top-center"
+							isDismissable={false}
+							closeButton={!isLoading}
+						>
+							<ModalContent>
+								{(onClose) => (
+									<div className="flex flex-col gap-1">
+										<ModalHeader>Uploading Dataset</ModalHeader>
+										<ModalBody>
+											<div className="flex flex-col gap-1">
+												<p className="text-sm text-warning">Please wait while we upload your dataset</p>
+												<p className="text-sm text-warning">Do not close this window</p>
+												<p className="text-sm text-warning">This may take a while depending on the size of your dataset</p>
+												<p className="text-lg text-primary">Uploading {progress}%</p>
+											</div>
+											<Progress value={progress} />
+										</ModalBody>
+									</div>
+								)}
+							</ModalContent>
+						</Modal>
+					)
+				}
+				<iframe name="submit_file" style={{display: 'none'}}></iframe>
 			</>
 		</div>
 	);
