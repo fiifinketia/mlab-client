@@ -103,6 +103,7 @@ export const AddDataset = () => {
 										isRequired
 										name="description"
 										variant="bordered"
+										maxLength={200}
 										value={datasetDescription}
 										onChange={(e) => setDatasetDescription(e.target.value)}
 									/>
