@@ -1,0 +1,24 @@
+name: Push Client to Server
+
+on:
+    push:
+        branches:
+        - MAIN
+    
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
+          - name: push to server
+            uses: appleboy/ssh-action@v1.0.0
+            with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USER }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                script: |
+                    cd ${{ secrets.CLIENT_PATH }}
+                    git pull
+                    npm ci
+                    npm run build
+                    pm2 restart all
