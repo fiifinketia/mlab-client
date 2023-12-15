@@ -62,7 +62,7 @@ export const AddDataset = () => {
 				resolve(response)
 			}
 			catch(err){
-				console.log(err)
+				alert("Error uploading dataset")
 			}
 	   }
 	})
