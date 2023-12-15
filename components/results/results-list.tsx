@@ -58,6 +58,7 @@ export function ResultsList() {
 		const fetchResults = async () => {
 			const results = await getResults();
 			setResults(results);
+			setPages(Math.ceil(results.length / rowsPerPage));
 		};
 		fetchResults();
 	}, []);
@@ -77,6 +78,7 @@ export function ResultsList() {
 	});
 
 	const [page, setPage] = React.useState(1);
+	const [pages, setPages] = React.useState(1);
 
 	const hasSearchFilter = Boolean(filterValue);
 
@@ -133,10 +135,11 @@ export function ResultsList() {
 			);
 		}
 
+		setPages(Math.ceil(filteredResults.length / rowsPerPage));
+
 		return filteredResults;
 	}, [results, filterValue, statusFilter, typeFilter]);
 
-	const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
 	const items = React.useMemo(() => {
 		const start = (page - 1) * rowsPerPage;

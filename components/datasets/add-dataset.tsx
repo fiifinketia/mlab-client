@@ -137,7 +137,7 @@ export const AddDataset = () => {
 					isLoading && (
 						<Modal
 							isOpen={isLoading}
-							onOpenChange={() => setIsLoading(false)}
+							onOpenChange={() => !isLoading ? setIsLoading(false): null}
 							placement="top-center"
 							isDismissable={false}
 							closeButton={!isLoading}

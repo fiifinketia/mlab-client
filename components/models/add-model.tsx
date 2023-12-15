@@ -27,41 +27,47 @@ export const AddModel = () => {
 			router.push("/api/auth/login");
 			return;
 		}
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: name,
-                    description: description,
-                    version: version,
-                    gh_project_name: gh_project_name,
-                    owner_id: user?.email,
-                    private: isPrivate,
-                    parameters: parameters,
-                }),
-            })
-            if (res.status !== 200) {
-                throw { status: res.status, cause: res.statusText, detail: (await res.json()).detail };
-            }
-            window.location.reload();
-        } catch (err: any) {            
-            // If error is 409, then the model already exists
-            if (err.status === 409) {
-                alert("Model already exists. Please choose a different name.")
-            }
-            if (err.status === 422) {
-                alert("Please fill out all required fields.")
-            }
-            if (err.status === 404) {
-                alert(err.detail)
-            }
-            else {
-                alert("Internal server error, contact admin")
-            }
-        }
+		try {
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						name: name,
+						description: description,
+						version: version,
+						gh_project_name: gh_project_name,
+						owner_id: user?.email,
+						private: isPrivate,
+						parameters: parameters,
+					}),
+				}
+			);
+			if (res.status !== 200) {
+				throw {
+					status: res.status,
+					cause: res.statusText,
+					detail: (await res.json()).detail,
+				};
+			}
+			window.location.reload();
+		} catch (err: any) {
+			// If error is 409, then the model already exists
+			if (err.status === 409) {
+				alert("Model already exists. Please choose a different name.");
+			}
+			if (err.status === 422) {
+				alert("Please fill out all required fields.");
+			}
+			if (err.status === 404) {
+				alert(err.detail);
+			} else {
+				alert("Internal server error, contact admin");
+			}
+		}
 	};
 
 	const [name, setName] = React.useState("");
@@ -71,20 +77,17 @@ export const AddModel = () => {
 	const [newParameter, setNewParameter] = React.useState<any>("");
 	const [isPrivate, setIsPrivate] = React.useState(false);
 	const [parameters, setParameters] = React.useState<any>({});
-    const [ghProjects, setGhProjects] = React.useState<any[]>([]);
+	const [ghProjects, setGhProjects] = React.useState<any[]>([]);
 
-    React.useEffect(() => {
-        const fetchOrgRepo = async () => {
-            const res = await fetch(
-                '/api/github/org-repos'
-            );
+	React.useEffect(() => {
+		const fetchOrgRepo = async () => {
+			const res = await fetch("/api/github/org-repos");
 
-            const data = await res.json();
-            setGhProjects(data);
-
-        }
-        fetchOrgRepo();
-    }, [])
+			const data = await res.json();
+			setGhProjects(data);
+		};
+		fetchOrgRepo();
+	}, []);
 
 	const setParameterValues = (key: string, value: any) => {
 		setParameters((prev: any) => ({ ...prev, [key]: value }));
@@ -102,12 +105,12 @@ export const AddModel = () => {
 		setNewParameter("");
 	};
 
-    const setModel = async (project: string) => {
-        const model = ghProjects.find((p: any) => p.name === project);
-        setGh_project_name(model.name);
-        setDescription(model.description);
-        setName(model.name);
-    }
+	const setModel = async (project: string) => {
+		const model = ghProjects.find((p: any) => p.name === project);
+		setGh_project_name(model.name);
+		setDescription(model.description);
+		setName(model.name);
+	};
 
 	return (
 		<div>
@@ -130,45 +133,56 @@ export const AddModel = () => {
 				<ModalContent>
 					<ModalHeader>Add Model</ModalHeader>
 					<ModalBody>
-                        <Select label="Github Project" placeholder="Select Project" onChange={(e) => setModel(e.target.value)} required>
-                            {ghProjects.map((project: any) => (
-                                <SelectItem value={project.name} textValue={project.name} key={project.name}>
-                                    {project.name}
-                                </SelectItem>
-                            ))}
-                        </Select>
+						<Select
+							label="Github Project"
+							placeholder="Select Project"
+							onChange={(e) => setModel(e.target.value)}
+							required
+						>
+							{ghProjects.map((project: any) => (
+								<SelectItem
+									value={project.name}
+									textValue={project.name}
+									key={project.name}
+								>
+									{project.name}
+								</SelectItem>
+							))}
+						</Select>
 						<Input
 							label="Description"
 							placeholder="Description"
-                            value={description}
+							value={description}
 							onChange={(e) => setDescription(e.target.value)}
 						/>
 						<Input
 							label="Version"
 							placeholder="Version"
-                            isDisabled={gh_project_name === ""}
+							isDisabled={gh_project_name === ""}
 							onChange={(e) => setVersion(e.target.value)}
-                            required
+							required
 						/>
-						
+
 						<Switch
 							isSelected={isPrivate}
-                            isDisabled={gh_project_name === ""}
+							isDisabled={gh_project_name === ""}
 							onChange={() => setIsPrivate(!isPrivate)}
 						>
 							Private
 						</Switch>
-                        <div className="flex flex-row gap-2 items-center">
-                            <h3 className="text-lg font-semibold">Parameters</h3>
-                            <span className="text-xs text-gray-500">Add parameters to your model</span>
-                        </div>
+						<div className="flex flex-row gap-2 items-center">
+							<h3 className="text-lg font-semibold">Parameters</h3>
+							<span className="text-xs text-gray-500">
+								Add parameters to your model
+							</span>
+						</div>
 						{Object.entries(parameters).map((param: any, index) => (
 							<ParameterInput
 								key={index}
 								name={param[0]}
 								value={param[1]}
 								setValue={setParameterValues}
-                                isDisabled={gh_project_name === ""}
+								isDisabled={gh_project_name === ""}
 								removeParameter={removeParameter}
 							/>
 						))}
@@ -177,11 +191,16 @@ export const AddModel = () => {
 								label="Name"
 								placeholder="Name"
 								value={newParameter}
-                                isDisabled={gh_project_name === ""}
+								isDisabled={gh_project_name === ""}
 								onChange={(e) => setNewParameter(e.target.value)}
 							/>
 
-							<Button color="primary" size="sm" onClick={addNewParameter} isDisabled={gh_project_name === ""}>
+							<Button
+								color="primary"
+								size="sm"
+								onClick={addNewParameter}
+								isDisabled={gh_project_name === ""}
+							>
 								Add Parameter
 							</Button>
 						</div>
@@ -192,8 +211,13 @@ export const AddModel = () => {
 							size="md"
 							className="w-full"
 							onClick={onAddModel}
-                            // Disabled if any of the required fields are empty
-                            isDisabled={name === "" || description === "" || version === "" || gh_project_name === ""}
+							// Disabled if any of the required fields are empty
+							isDisabled={
+								name === "" ||
+								description === "" ||
+								version === "" ||
+								gh_project_name === ""
+							}
 						>
 							Add Model
 						</Button>
@@ -212,9 +236,9 @@ const ParameterInput = ({
 	value,
 	setValue,
 	removeParameter,
-    isDisabled
+	isDisabled,
 }: any) => {
-    const [type, setType] = React.useState("string");
+	const [type, setType] = React.useState("string");
 	return (
 		<div className="flex flex-row gap-2">
 			<Input label="Name" placeholder="Name" value={name} isDisabled={true} />
@@ -223,9 +247,12 @@ const ParameterInput = ({
 				placeholder="Type"
 				value={type}
 				// onChange={(e) => onChange(name, e.target.value)}
-                onChange={(e) => setType(e.target.value)}
-                isDisabled={isDisabled}
-                description={type === "list" && "Select the type of parameter, list type should be written in array format"}
+				onChange={(e) => setType(e.target.value)}
+				isDisabled={isDisabled}
+				description={
+					type === "list" &&
+					"Select the type of parameter, list type should be written in array format"
+				}
 			>
 				<SelectItem value="string" key={"string"}>
 					String
@@ -233,21 +260,42 @@ const ParameterInput = ({
 				<SelectItem value="number" key={"number"}>
 					Number
 				</SelectItem>
-				<SelectItem value="list" key={"list"} placeholder="Write in array format">
+				<SelectItem
+					value="list"
+					key={"list"}
+					placeholder="Write in array format"
+				>
 					List
 				</SelectItem>
 				<SelectItem value="boolean" key={"boolean"}>
 					Boolean
 				</SelectItem>
 			</Select>
-			<Input
-				label="Value"
-				placeholder="Value"
-                type={type === "number" ? "number" : "text"}
-				value={value}
-                isDisabled={isDisabled}
-				onChange={(e) => setValue(name, e.target.value)}
-			/>
+			{type !== "boolean" ? (
+				<Input
+					label="Value"
+					placeholder="Value"
+					type={type === "number" ? "number" : "text"}
+					value={value}
+					isDisabled={isDisabled}
+					onChange={(e) => setValue(name, e.target.value)}
+				/>
+			) : (
+				<Select
+					label="Value"
+					placeholder="Value"
+					value={value}
+					isDisabled={isDisabled}
+					onChange={(e) => setValue(name, e.target.value)}
+				>
+					<SelectItem value="True" key={"True"}>
+						True
+					</SelectItem>
+					<SelectItem value="False" key={"False"}>
+						False
+					</SelectItem>
+				</Select>
+			)}
 			<span className="flex items-center gap-2">
 				<TrashIcon onClick={removeParameter(name)} />
 			</span>
