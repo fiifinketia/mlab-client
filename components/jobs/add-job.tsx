@@ -25,7 +25,7 @@ export const AddJob = () => {
 			router.push("/api/auth/login");
 			return;
 		}
-		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/`, {
+		await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
