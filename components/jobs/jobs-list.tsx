@@ -186,6 +186,34 @@ export const JobsList = ({
 			window.location.reload();
 		}, 5000); // 5 seconds
 	};
+
+	const runTest = (data: {
+		job_id: string;
+		dataset_id: string;
+		parameters?: any;
+	}) => {
+		if (user === undefined) router.push("/api/auth/login");
+		if (data.job_id === undefined || data.dataset_id === undefined) return;
+
+		const body = {
+			job_id: data.job_id,
+			user_id: user?.email,
+			dataset_id: data.dataset_id,
+			parameters: data.parameters,
+		};
+		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/test`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+		})
+		onTestOpenChange();
+		setTimeout(() => {
+			window.location.reload();
+		}, 5000); // 5 seconds
+	};
+
 	return (
 		<div className=" w-full flex flex-col gap-4">
 			<Table aria-label="Example table with custom cells">
@@ -227,7 +255,15 @@ export const JobsList = ({
 				closeModal={closeTrainModal}
 				runTrain={runTrain}
 			/>
-			
+
+			<TestModelModal
+				isOpen={isTestModelOpen}
+				onOpenChange={onTestOpenChange}
+				job={runTestJob}
+				datasets={datasets}
+				closeModal={onTestOpenChange}
+				runTest={runTest}
+			/>
 		</div>
 	);
 };
@@ -338,3 +374,77 @@ const TrainModelModal = ({
 				</ModalContent>
 			</Modal>
 }
+
+const TestModelModal = ({
+	isOpen,
+	onOpenChange,
+	job,
+	datasets,
+	closeModal,
+	runTest,
+}: {
+	isOpen: boolean;
+	onOpenChange: () => void;
+	job: any;
+	datasets: any[];
+	closeModal: () => void;
+	runTest: (data: {
+		job_id: string;
+		dataset_id: string;
+		parameters?: any;
+	}) => void;
+}) => {
+	const [selectedDataset, setSelectedDataset] = useState<any>(new Set([]));
+	
+	const handleSubmit = () => {
+		const data = {
+			job_id: job.id as string,
+			dataset_id: Array.from(selectedDataset)[0] as string,
+		}
+		runTest(data);
+	}
+
+	const closeModalAndReset = () => {
+		closeModal();
+		setSelectedDataset(new Set([]));
+	}
+
+	return <Modal isOpen={isOpen} onClose={closeModalAndReset} onOpenChange={onOpenChange} placement="top-center" isDismissable={false} size="3xl">
+				<ModalContent>
+					{() => (
+						<>
+							<ModalHeader className="flex flex-col gap-1">
+								Test Model
+							</ModalHeader>
+							<ModalBody>
+								<span>Model Name: {job.model_name}</span>
+								<span>Description: {job.description}</span>
+								<span>Datasets</span>
+								<Select
+									label={selectedDataset.size !== 0 ? null : "Select a dataset"}
+									className="max-w-xs"
+									selectedKeys={selectedDataset}
+									onSelectionChange={setSelectedDataset}
+								>
+									{datasets.map((dataset: any) => (
+										<SelectItem key={dataset.id} value={dataset.id}>
+											{dataset.name}
+										</SelectItem>
+									))}
+								</Select>
+							</ModalBody>
+							<ModalFooter>
+								<Button color="danger" variant="flat" onClick={closeModalAndReset}>
+									Close
+								</Button>
+								<Button color="primary" onPress={handleSubmit}>
+									Test
+								</Button>
+							</ModalFooter>
+						</>
+					)}
+				</ModalContent>
+			</Modal>
+}
+
+
