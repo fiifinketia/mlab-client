@@ -3,7 +3,7 @@ name: Push Client to Server
 on:
     push:
         branches:
-        - MAIN
+        - main
     
 jobs:
     build:
