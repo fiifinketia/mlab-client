@@ -12,6 +12,7 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import { Select, SelectItem } from "@nextui-org/select";
+import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -19,25 +20,42 @@ export const AddJob = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const { user } = useUser();
 	const router = useRouter();
+	const [isLoading, setIsLoading] = useState(false);
+	const [progress, setProgress] = useState(0);
 	const onAddJob = async () => {
 		onOpenChange();
 		if (user === undefined) {
 			router.push("/api/auth/login");
 			return;
 		}
-		await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				name: name,
-				model_id: Array.from(selectedModel)[0],
-				description: description,
-				owner_id: user?.email,
-				parameters: useDefaultParams ? undefined : defaultParams,
-			}),
-		});
+		try {
+			await axios.post(
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs`,
+				{
+					name: name,
+					description: description,
+					model_id: Array.from(selectedModel)[0],
+					owner_id: user?.email,
+					parameters: useDefaultParams ? models.filter((model: any) => model.id === Array.from(selectedModel)[0])[0].parameters : defaultParams,
+				},
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+					onUploadProgress(progressEvent: any) {
+						const p = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+						setProgress(p)
+						if (p === 100) {
+							setIsLoading(false)
+							onOpenChange()
+							window.location.reload()
+						}
+					},
+				}
+			);
+		} catch (error) {
+			
+		}
 		// refresh page
 		window.location.reload();
 	};
