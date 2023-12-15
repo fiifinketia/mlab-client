@@ -54,10 +54,8 @@ export const AddJob = () => {
 				}
 			);
 		} catch (error) {
-			
+			alert("Error adding job. Please try again.")
 		}
-		// refresh page
-		window.location.reload();
 	};
 
 	const [name, setName] = useState("");
