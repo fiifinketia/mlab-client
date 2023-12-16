@@ -450,9 +450,9 @@ const TestModelModal = ({
 	}) => void;
 }) => {
 	const [selectedDataset, setSelectedDataset] = useState<any>(new Set([]));
-	const [useCustomPreTrainedModel, setUseCustomPreTrainedModel] =
-		useState<boolean>(false);
-	const [useDefaultPreTrainedModel, setUseDefaultPreTrainedModel] =
+	const [useDefaultPretrainedModel, setUseDefaultPretrainedModel] =
+		useState<boolean>(true);
+	const [customPreTrainedModel, setCustomPreTrainedModel] =
 		useState<any>(new Set([]));
 	const [name, setName] = useState("");
 
@@ -461,8 +461,8 @@ const TestModelModal = ({
 			job_id: job.id as string,
 			dataset_id: Array.from(selectedDataset)[0] as string,
 			parameters: undefined,
-			result_id: useCustomPreTrainedModel
-				? (Array.from(useDefaultPreTrainedModel)[0] as string)
+			result_id: useDefaultPretrainedModel
+				? (Array.from(customPreTrainedModel)[0] as string)
 				: undefined,
 			name: name,
 		};
@@ -507,23 +507,23 @@ const TestModelModal = ({
 								))}
 							</Select>
 							<Switch
-								isSelected={useDefaultPreTrainedModel}
+								isSelected={useDefaultPretrainedModel}
 								onChange={() =>
-									setUseDefaultPreTrainedModel(!useDefaultPreTrainedModel)
+									setUseDefaultPretrainedModel(!useDefaultPretrainedModel)
 								}
 							>
 								Use default pretrained model
 							</Switch>
-							{useDefaultPreTrainedModel && (
+							{useDefaultPretrainedModel && (
 								<Select
 									label={
-										useDefaultPreTrainedModel.size !== 0
+										customPreTrainedModel.size !== 0
 											? null
 											: "Select a pretrained model"
 									}
 									className="max-w-xs"
-									selectedKeys={useDefaultPreTrainedModel}
-									onSelectionChange={setUseDefaultPreTrainedModel}
+									selectedKeys={customPreTrainedModel}
+									onSelectionChange={setCustomPreTrainedModel}
 								>
 									{job.results.map((result: any) => {
 										if (result.type !== "train") return;
