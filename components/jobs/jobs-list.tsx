@@ -457,6 +457,8 @@ const TestModelModal = ({
 	);
 	const [name, setName] = useState("");
 
+	const results = job.results.filter((result: any) => result.type === "train" && result.status === "done");
+
 	const handleSubmit = () => {
 		const data = {
 			job_id: job.id as string,
@@ -531,14 +533,12 @@ const TestModelModal = ({
 									selectedKeys={customPreTrainedModel}
 									onSelectionChange={setCustomPreTrainedModel}
 								>
-									{job.results.length === 0 ? (
+									{results.length === 0 ? (
 										<SelectItem value={""} key={"0"}>
 											No pretrained models
 										</SelectItem>
 									) : (
-										job.results.map((result: any) => {
-											if (result.type !== "train") return;
-											if (result.status !== "done") return;
+										results.map((result: any) => {
 											return (
 												<SelectItem key={result.id} value={result.id}>
 													{result.name +
