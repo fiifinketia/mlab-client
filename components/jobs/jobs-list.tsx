@@ -532,6 +532,7 @@ const TestModelModal = ({
 									className="max-w-xs"
 									selectedKeys={customPreTrainedModel}
 									onSelectionChange={setCustomPreTrainedModel}
+									isDisabled={!useDefaultPretrainedModel || results.length === 0}
 								>
 									{results.length === 0 ? (
 										<SelectItem value={""} key={"0"}>
