@@ -541,8 +541,8 @@ const TestModelModal = ({
 							{useDefaultPretrainedModel && (
 								<Select
 									label={
-										customPreTrainedModel.size !== 0
-											? null
+										results.length === 0
+											? "No pretrained models"
 											: "Select a pretrained model"
 									}
 									className="max-w-xs"
@@ -551,7 +551,7 @@ const TestModelModal = ({
 									isDisabled={!useDefaultPretrainedModel || results.length === 0}
 								>
 									{results.length === 0 ? (
-										<SelectItem value={""} key={"0"}>
+										<SelectItem value={""} key={"0"} isReadOnly>
 											No pretrained models
 										</SelectItem>
 									) : (
