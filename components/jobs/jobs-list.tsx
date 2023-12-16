@@ -45,21 +45,29 @@ const RenderCell = (
 	openTrainModel: Function,
 	openTestModel: Function
 ) => {
-	const latestResult = item.results !== undefined ? item.results.sort((a: any, b: any) => {
-		return new Date(b.created).getTime() - new Date(a.created).getTime();
-	})[0]: undefined;
+	const latestResult =
+		item.results !== undefined
+			? item.results.sort((a: any, b: any) => {
+					return new Date(b.created).getTime() - new Date(a.created).getTime();
+			  })[0]
+			: undefined;
 	const results = item.results;
 	switch (columnKey) {
 		case "name":
 			return <span>{item.name}</span>;
 		case "model_name":
-			return <Tooltip content={item.model_name}>
-				<span className="flex w-40 truncate">{item.model_name}</span>
-			</Tooltip>
+			return (
+				<Tooltip content={item.model_name}>
+					<span className="flex w-40 truncate">{item.model_name}</span>
+				</Tooltip>
+			);
 		case "results":
-			if (results === undefined || results.length === 0) return <Chip color="primary">Ready</Chip>;
-			if (latestResult && latestResult.status === "running") return <Chip color="warning">Running</Chip>;
-			if (latestResult && latestResult.status === "error") return <Chip color="danger">Error</Chip>;
+			if (results === undefined || results.length === 0)
+				return <Chip color="primary">Ready</Chip>;
+			if (latestResult && latestResult.status === "running")
+				return <Chip color="warning">Running</Chip>;
+			if (latestResult && latestResult.status === "error")
+				return <Chip color="danger">Error</Chip>;
 			else return <Chip color="success">Done</Chip>;
 		case "actions":
 			return (
@@ -70,7 +78,11 @@ const RenderCell = (
 						</DropdownTrigger>
 						<DropdownMenu
 							aria-label="Dynamic Actions"
-							disabledKeys={latestResult && latestResult.status === "running" ? ["train"] : []}
+							disabledKeys={
+								latestResult && latestResult.status === "running"
+									? ["train"]
+									: []
+							}
 						>
 							<DropdownItem
 								color="primary"
@@ -105,7 +117,6 @@ const RenderCell = (
 	}
 };
 
-
 export const JobsList = ({
 	filter,
 	jobs,
@@ -116,9 +127,13 @@ export const JobsList = ({
 	datasets: any[];
 }) => {
 	const [filteredJobs, setFilteredJobs] = useState<any[]>([]);
-	const [selectedTrainDataset, setSelectedTrainDataset] = useState<any>(new Set([]));
-	const { isOpen: isTrainModelOpen, onOpenChange: onTrainOpenChange } = useDisclosure();
-	const { isOpen: isTestModelOpen, onOpenChange: onTestOpenChange } = useDisclosure();
+	const [selectedTrainDataset, setSelectedTrainDataset] = useState<any>(
+		new Set([])
+	);
+	const { isOpen: isTrainModelOpen, onOpenChange: onTrainOpenChange } =
+		useDisclosure();
+	const { isOpen: isTestModelOpen, onOpenChange: onTestOpenChange } =
+		useDisclosure();
 	const [runTrainJob, setRunTrainJob] = useState<any>({});
 	const [runTestJob, setRunTestJob] = useState<any>({});
 	const { user } = useUser();
@@ -137,7 +152,7 @@ export const JobsList = ({
 	const closeTrainModal = () => {
 		onTrainOpenChange();
 		setSelectedTrainDataset(new Set([]));
-	}
+	};
 
 	// set filtered jobs to jobs on first render
 	useEffect(() => {
@@ -164,6 +179,7 @@ export const JobsList = ({
 		job_id: string;
 		dataset_id: string;
 		parameters?: any;
+		name: string;
 	}) => {
 		if (user === undefined) router.push("/api/auth/login");
 		if (data.job_id === undefined || data.dataset_id === undefined) return;
@@ -173,6 +189,7 @@ export const JobsList = ({
 			user_id: user?.email,
 			dataset_id: data.dataset_id,
 			parameters: data.parameters,
+			name: data.name,
 		};
 		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/train`, {
 			method: "POST",
@@ -180,7 +197,7 @@ export const JobsList = ({
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(body),
-		})
+		});
 		onTrainOpenChange();
 		setTimeout(() => {
 			window.location.reload();
@@ -191,6 +208,7 @@ export const JobsList = ({
 		job_id: string;
 		dataset_id: string;
 		parameters?: any;
+		name: string;
 	}) => {
 		if (user === undefined) router.push("/api/auth/login");
 		if (data.job_id === undefined || data.dataset_id === undefined) return;
@@ -200,6 +218,7 @@ export const JobsList = ({
 			user_id: user?.email,
 			dataset_id: data.dataset_id,
 			parameters: data.parameters,
+			name: data.name,
 		};
 		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/test`, {
 			method: "POST",
@@ -207,7 +226,7 @@ export const JobsList = ({
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(body),
-		})
+		});
 		onTestOpenChange();
 		setTimeout(() => {
 			window.location.reload();
@@ -268,7 +287,6 @@ export const JobsList = ({
 	);
 };
 
-
 const TrainModelModal = ({
 	isOpen,
 	onOpenChange,
@@ -286,94 +304,129 @@ const TrainModelModal = ({
 		job_id: string;
 		dataset_id: string;
 		parameters?: any;
+		name: string;
 	}) => void;
 }) => {
 	const [selectedDataset, setSelectedDataset] = useState<any>(new Set([]));
 	const [changeParams, setChangeParams] = useState<boolean>(false);
 	const [defaultParams, setDefaultParams] = useState<any>({});
+	const [name, setName] = useState("");
 
 	const setParameters = (key: string, value: any) => {
 		setDefaultParams((prev: any) => ({ ...prev, [key]: value }));
-	}
+	};
 
 	const handleSubmit = () => {
 		const data = {
 			job_id: job.id as string,
 			dataset_id: Array.from(selectedDataset)[0] as string,
 			parameters: changeParams ? defaultParams : undefined,
-		}
+			name: name,
+		};
 		runTrain(data);
-	}
+	};
 
 	const closeModalAndReset = () => {
 		closeModal();
 		setSelectedDataset(new Set([]));
 		setChangeParams(false);
 		setDefaultParams({});
-	}
+	};
 
-
-	return <Modal isOpen={isOpen} onClose={closeModalAndReset} onOpenChange={onOpenChange} placement="top-center" isDismissable={false} size="3xl">
-				<ModalContent>
-					{() => (
-						<>
-							<ModalHeader className="flex flex-col gap-1">
-								Train Model
-							</ModalHeader>
-							<ModalBody>
-								<span>Model Name: {job.model_name}</span>
-								<span>Description: {job.description}</span>
-								<span>Datasets</span>
-								<Select
-									label={selectedDataset.size !== 0 ? null : "Select a dataset"}
-									className="max-w-xs"
-									selectedKeys={selectedDataset}
-									onSelectionChange={setSelectedDataset}
-								>
-									{datasets.map((dataset: any) => (
-										<SelectItem key={dataset.id} value={dataset.id}>
-											{dataset.name}
-										</SelectItem>
-									))}
-								</Select>
-								<Switch isSelected={changeParams} onChange={() => {setChangeParams(!changeParams); setDefaultParams(job.parameters) }}>
-									Change Parameters
-								</Switch>
-								{
-									changeParams && (
-										<div className="flex flex-wrap md:inline-grid md:grid-cols-4 gap-2">
-											{
-												// Default parameters is an object of [string, Any]
-												Object.entries(defaultParams).map((param: any) => (														<div>
-														<Input
-															label={param[0]}
-															key={param[0]}
-															variant="bordered"
-															required
-															value={param[1]}
-															type={typeof param[1] === "number" ? "number" : "text"}
-															onChange={(e) => setParameters(param[0], e.target.type === "number" ? Number(e.target.value) : e.target.value)}
-														/>
-													</div>
-												))
-											}
-										</div>
-									)
-								}
-							</ModalBody>
-							<ModalFooter>
-								<Button color="danger" variant="flat" onClick={closeModalAndReset}>
-									Close
-								</Button>
-								<Button color="primary" onPress={handleSubmit}>
-									Train
-								</Button>
-							</ModalFooter>
-						</>
-					)}
-				</ModalContent>
-			</Modal>
-}
+	return (
+		<Modal
+			isOpen={isOpen}
+			onClose={closeModalAndReset}
+			onOpenChange={onOpenChange}
+			placement="top-center"
+			isDismissable={false}
+			size="3xl"
+		>
+			<ModalContent>
+				{() => (
+					<>
+						<ModalHeader className="flex flex-col gap-1">
+							Train Model
+						</ModalHeader>
+						<ModalBody>
+							<span>Model Name: {job.model_name}</span>
+							<span>Description: {job.description}</span>
+							<span>Datasets</span>
+							<Input
+								label="Name"
+								variant="bordered"
+								required
+								onChange={(e) => setName(e.target.value)}
+							/>
+							<Select
+								label={selectedDataset.size !== 0 ? null : "Select a dataset"}
+								className="max-w-xs"
+								selectedKeys={selectedDataset}
+								onSelectionChange={setSelectedDataset}
+							>
+								{datasets.map((dataset: any) => (
+									<SelectItem key={dataset.id} value={dataset.id}>
+										{dataset.name}
+									</SelectItem>
+								))}
+							</Select>
+							<Switch
+								isSelected={changeParams}
+								onChange={() => {
+									setChangeParams(!changeParams);
+									setDefaultParams(job.parameters);
+								}}
+							>
+								Change Parameters
+							</Switch>
+							{changeParams && (
+								<div className="flex flex-wrap md:inline-grid md:grid-cols-4 gap-2">
+									{
+										// Default parameters is an object of [string, Any]
+										Object.entries(defaultParams).map((param: any) => (
+											<div>
+												<Input
+													label={param[0]}
+													key={param[0]}
+													variant="bordered"
+													required
+													value={param[1]}
+													type={
+														typeof param[1] === "number" ? "number" : "text"
+													}
+													onChange={(e) =>
+														setParameters(
+															param[0],
+															e.target.type === "number"
+																? Number(e.target.value)
+																: e.target.value
+														)
+													}
+												/>
+											</div>
+										))
+									}
+								</div>
+							)}
+						</ModalBody>
+						<ModalFooter>
+							<Button
+								color="danger"
+								variant="flat"
+								onClick={closeModalAndReset}
+							>
+								Close
+							</Button>
+							<Button color="primary" onPress={handleSubmit}>
+								Train
+							</Button>
+						</ModalFooter>
+					</>
+				)}
+			</ModalContent>
+		</Modal>
+	);
+};
 
 const TestModelModal = ({
 	isOpen,
@@ -392,59 +445,115 @@ const TestModelModal = ({
 		job_id: string;
 		dataset_id: string;
 		parameters?: any;
+		result_id?: string;
+		name: string;
 	}) => void;
 }) => {
 	const [selectedDataset, setSelectedDataset] = useState<any>(new Set([]));
-	
+	const [useCustomPreTrainedModel, setUseCustomPreTrainedModel] =
+		useState<boolean>(false);
+	const [useDefaultPreTrainedModel, setUseDefaultPreTrainedModel] =
+		useState<any>(new Set([]));
+	const [name, setName] = useState("");
+
 	const handleSubmit = () => {
 		const data = {
 			job_id: job.id as string,
 			dataset_id: Array.from(selectedDataset)[0] as string,
-		}
+			parameters: undefined,
+			result_id: useCustomPreTrainedModel
+				? (Array.from(useDefaultPreTrainedModel)[0] as string)
+				: undefined,
+			name: name,
+		};
 		runTest(data);
-	}
+	};
 
 	const closeModalAndReset = () => {
 		closeModal();
 		setSelectedDataset(new Set([]));
-	}
+	};
 
-	return <Modal isOpen={isOpen} onClose={closeModalAndReset} onOpenChange={onOpenChange} placement="top-center" isDismissable={false} size="3xl">
-				<ModalContent>
-					{() => (
-						<>
-							<ModalHeader className="flex flex-col gap-1">
-								Test Model
-							</ModalHeader>
-							<ModalBody>
-								<span>Model Name: {job.model_name}</span>
-								<span>Description: {job.description}</span>
-								<span>Datasets</span>
+	return (
+		<Modal
+			isOpen={isOpen}
+			onClose={closeModalAndReset}
+			onOpenChange={onOpenChange}
+			placement="top-center"
+			isDismissable={false}
+			size="3xl"
+		>
+			<ModalContent>
+				{() => (
+					<>
+						<ModalHeader className="flex flex-col gap-1">
+							Test Model
+						</ModalHeader>
+						<ModalBody>
+							<span>Model Name: {job.model_name}</span>
+							<span>Description: {job.description}</span>
+							<span>Datasets</span>
+							<Input label="Name" variant="bordered" required onChange={(e) => setName(e.target.value)} />
+							<Select
+								label={selectedDataset.size !== 0 ? null : "Select a dataset"}
+								className="max-w-xs"
+								selectedKeys={selectedDataset}
+								onSelectionChange={setSelectedDataset}
+							>
+								{datasets.map((dataset: any) => (
+									<SelectItem key={dataset.id} value={dataset.id}>
+										{dataset.name}
+									</SelectItem>
+								))}
+							</Select>
+							<Switch
+								isSelected={useDefaultPreTrainedModel}
+								onChange={() =>
+									setUseDefaultPreTrainedModel(!useDefaultPreTrainedModel)
+								}
+							>
+								Use default pretrained model
+							</Switch>
+							{useDefaultPreTrainedModel && (
 								<Select
-									label={selectedDataset.size !== 0 ? null : "Select a dataset"}
+									label={
+										useDefaultPreTrainedModel.size !== 0
+											? null
+											: "Select a pretrained model"
+									}
 									className="max-w-xs"
-									selectedKeys={selectedDataset}
-									onSelectionChange={setSelectedDataset}
+									selectedKeys={useDefaultPreTrainedModel}
+									onSelectionChange={setUseDefaultPreTrainedModel}
 								>
-									{datasets.map((dataset: any) => (
-										<SelectItem key={dataset.id} value={dataset.id}>
-											{dataset.name}
-										</SelectItem>
-									))}
+									{job.results.map((result: any) => {
+										if (result.type !== "train") return;
+										if (result.status !== "done") return;
+										return (
+											<SelectItem key={result.id} value={result.id}>
+												{result.name +
+													" - " +
+													new Date(result.created).toLocaleDateString()}
+											</SelectItem>
+										);
+									})}
 								</Select>
-							</ModalBody>
-							<ModalFooter>
-								<Button color="danger" variant="flat" onClick={closeModalAndReset}>
-									Close
-								</Button>
-								<Button color="primary" onPress={handleSubmit}>
-									Test
-								</Button>
-							</ModalFooter>
-						</>
-					)}
-				</ModalContent>
-			</Modal>
-}
-
-
+							)}
+						</ModalBody>
+						<ModalFooter>
+							<Button
+								color="danger"
+								variant="flat"
+								onClick={closeModalAndReset}
+							>
+								Close
+							</Button>
+							<Button color="primary" onPress={handleSubmit}>
+								Test
+							</Button>
+						</ModalFooter>
+					</>
+				)}
+			</ModalContent>
+		</Modal>
+	);
+};
