@@ -438,7 +438,18 @@ const TestModelModal = ({
 }: {
 	isOpen: boolean;
 	onOpenChange: () => void;
-	job: any;
+	job: {
+		id: string;
+		model_name: string;
+		description: string;
+		results: {
+			id: string;
+			name: string;
+			created: string;
+			status: string;
+			type: string;
+		}[];
+	};
 	datasets: any[];
 	closeModal: () => void;
 	runTest: (data: {
@@ -457,7 +468,7 @@ const TestModelModal = ({
 	);
 	const [name, setName] = useState("");
 
-	const results = job.results.filter((result: any) => result.type === "train" && result.status === "done");
+	const results = job.results.filter((result: any) => result.status === "done" || result.type === "train");
 
 	const handleSubmit = () => {
 		const data = {
