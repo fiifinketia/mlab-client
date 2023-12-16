@@ -43,6 +43,7 @@ export const AddModel = () => {
 						owner_id: user?.email,
 						private: isPrivate,
 						parameters: parameters,
+						default_model: defaultModel,
 					}),
 				}
 			);
@@ -77,6 +78,7 @@ export const AddModel = () => {
 	const [newParameter, setNewParameter] = React.useState<any>("");
 	const [isPrivate, setIsPrivate] = React.useState(false);
 	const [parameters, setParameters] = React.useState<any>({});
+	const [defaultModel, setDefaultModel] = React.useState("");
 	const [ghProjects, setGhProjects] = React.useState<any[]>([]);
 
 	React.useEffect(() => {
@@ -160,6 +162,12 @@ export const AddModel = () => {
 							placeholder="Version"
 							isDisabled={gh_project_name === ""}
 							onChange={(e) => setVersion(e.target.value)}
+							required
+						/>
+						<Input
+							label="Default Model"
+							placeholder="Relative Path to default model in repo"
+							onChange={(e) => setDefaultModel(e.target.value)}
 							required
 						/>
 
