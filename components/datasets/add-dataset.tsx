@@ -120,7 +120,9 @@ export const AddDataset = () => {
 										value={String(isPrivate)}
 										onChange={() => setIsPrivate(!isPrivate)}
 									>
-										Private
+										{
+											isPrivate ? "Private" : "Public"
+										}
 									</Switch>
 								</ModalBody>
 								<ModalFooter>
