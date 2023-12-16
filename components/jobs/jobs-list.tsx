@@ -468,7 +468,7 @@ const TestModelModal = ({
 	);
 	const [name, setName] = useState("");
 
-	const results = job.results.filter((result: any) => result.status === "done" || result.type === "train");
+	const results = job.results.filter((result: any) => result.status === "done" && result.type === "train");
 
 	const handleSubmit = () => {
 		const data = {
