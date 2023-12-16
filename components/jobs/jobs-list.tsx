@@ -452,8 +452,9 @@ const TestModelModal = ({
 	const [selectedDataset, setSelectedDataset] = useState<any>(new Set([]));
 	const [useDefaultPretrainedModel, setUseDefaultPretrainedModel] =
 		useState<boolean>(true);
-	const [customPreTrainedModel, setCustomPreTrainedModel] =
-		useState<any>(new Set([]));
+	const [customPreTrainedModel, setCustomPreTrainedModel] = useState<any>(
+		new Set([])
+	);
 	const [name, setName] = useState("");
 
 	const handleSubmit = () => {
@@ -493,7 +494,12 @@ const TestModelModal = ({
 							<span>Model Name: {job.model_name}</span>
 							<span>Description: {job.description}</span>
 							<span>Datasets</span>
-							<Input label="Name" variant="bordered" required onChange={(e) => setName(e.target.value)} />
+							<Input
+								label="Name"
+								variant="bordered"
+								required
+								onChange={(e) => setName(e.target.value)}
+							/>
 							<Select
 								label={selectedDataset.size !== 0 ? null : "Select a dataset"}
 								className="max-w-xs"
@@ -525,17 +531,23 @@ const TestModelModal = ({
 									selectedKeys={customPreTrainedModel}
 									onSelectionChange={setCustomPreTrainedModel}
 								>
-									{job.results.map((result: any) => {
-										if (result.type !== "train") return;
-										if (result.status !== "done") return;
-										return (
-											<SelectItem key={result.id} value={result.id}>
-												{result.name +
-													" - " +
-													new Date(result.created).toLocaleDateString()}
-											</SelectItem>
-										);
-									})}
+									{job.results.length === 0 ? (
+										<SelectItem value={""} key={"0"}>
+											No pretrained models
+										</SelectItem>
+									) : (
+										job.results.map((result: any) => {
+											if (result.type !== "train") return;
+											if (result.status !== "done") return;
+											return (
+												<SelectItem key={result.id} value={result.id}>
+													{result.name +
+														" - " +
+														new Date(result.created).toLocaleDateString()}
+												</SelectItem>
+											);
+										})
+									)}
 								</Select>
 							)}
 						</ModalBody>
