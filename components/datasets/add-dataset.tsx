@@ -119,7 +119,9 @@ export const AddDataset = () => {
 										name="private"
 										value={String(isPrivate)}
 										onChange={() => setIsPrivate(!isPrivate)}
-									/>
+									>
+										Private
+									</Switch>
 								</ModalBody>
 								<ModalFooter>
 									<Button color="danger" variant="flat" onClick={onClose}>
