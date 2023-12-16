@@ -468,7 +468,11 @@ const TestModelModal = ({
 	);
 	const [name, setName] = useState("");
 
-	const results = job.results.filter((result: any) => result.status === "done" && result.type === "train");
+	const [results, setResults] = useState<any[]>([]);
+
+	useEffect(() => {
+		setResults(job.results.filter((result) => result.type === "train" && result.status === "done"));
+	}, [job]);
 
 	const handleSubmit = () => {
 		const data = {
