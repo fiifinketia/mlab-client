@@ -471,6 +471,7 @@ const TestModelModal = ({
 	const [results, setResults] = useState<any[]>([]);
 
 	useEffect(() => {
+		if (job.results === undefined) return;
 		setResults(job.results.filter((result) => result.type === "train" && result.status === "done"));
 	}, [job]);
 
