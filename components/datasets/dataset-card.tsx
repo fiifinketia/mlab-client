@@ -14,6 +14,7 @@ import {
 	PopoverContent,
 	Popover,
 	PopoverTrigger,
+	Tooltip,
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -62,7 +63,9 @@ export const DatasetCard = ({
 				<CardBody className="py-5">
 					{/* Dataset title and last updated time */}
 					<div className="flex items-center gap-6">
-						<span className="text-xl text-white font-semibold truncate overflow-y-hidden">{name}</span>
+						<Tooltip content={name}>
+							<span className="text-xl text-white font-semibold truncate overflow-y-hidden">{name}</span>
+						</Tooltip>
 					</div>
 					<div className="flex items-center gap-6">
 						<div>
