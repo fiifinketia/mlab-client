@@ -341,13 +341,13 @@ const getDuration = (start: string, end: string) => {
 		return `${duration} ms`;
 	}
 	if (duration < 1000 * 60) {
-		return `${Math.round(duration / 1000)} s`;
+		return `${Math.round(duration / 1000)} sec`;
 	}
 	if (duration < 1000 * 60 * 60) {
-		return `${Math.round(duration / (1000 * 60))} m`;
+		return `${Math.round(duration / (1000 * 60))} mins`;
 	}
 	if (duration < 1000 * 60 * 60 * 24) {
-		return `${Math.round(duration / (1000 * 60 * 60))} h`;
+		return `${Math.round(duration / (1000 * 60 * 60))} hrs`;
 	}
-	return `${Math.round(duration / (1000 * 60 * 60 * 24))} d`;
+	return `${Math.round(duration / (1000 * 60 * 60 * 24))} days`;
 };
