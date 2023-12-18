@@ -9,7 +9,7 @@ import {
 	TableHeader,
 	TableRow,
 	Tabs,
-    Tooltip,
+	Tooltip,
 } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 import { downloadFiles, downloadFile, statusColorMap } from "./utils";
@@ -54,11 +54,13 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 	useEffect(() => {
 		if (result.status === "running") {
 			const interval = setInterval(() => {
-				setCurrentDuration(getDuration(result.created, new Date().toISOString()));
+				setCurrentDuration(
+					getDuration(result.created, new Date().toISOString())
+				);
 			}, 1000);
 			return () => clearInterval(interval);
 		}
-	}, [result.status, result.created])
+	}, [result.status, result.created]);
 
 	return (
 		<div>
@@ -132,7 +134,13 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 										Finished
 									</span>
 									<span className="text-lg font-semibold">
-										{new Date(result.modified).toLocaleString()}
+										{result.status === "running" ? (
+											<Chip color={statusColorMap[result.status]}>
+												{result.status}
+											</Chip>
+										) : (
+											new Date(result.modified).toLocaleString()
+										)}
 									</span>
 								</div>
 								<div className="flex flex-col gap-1">
@@ -140,13 +148,9 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 										Duration
 									</span>
 									<span className="text-lg font-semibold">
-										{
-											result.status === "done"
-												? getDuration(result.created, result.modified)
-												
-												: currentDuration
-												  
-										}
+										{result.status === "running"
+											? currentDuration
+											: getDuration(result.created, result.modified)}
 									</span>
 								</div>
 							</div>
