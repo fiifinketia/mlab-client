@@ -33,6 +33,7 @@ const PARAMETERS_COLUMNS = [
 export const ResultInfo = ({ resultId }: { resultId: string }) => {
 	const [result, setResult] = useState<any>({});
 	const [loading, setLoading] = useState<boolean>(true);
+	const [currentDuration, setCurrentDuration] = useState<string>("");
 	const [error, setError] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -48,6 +49,16 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 		};
 		getResult();
 	}, [resultId]);
+
+	// // Keep updating current duration if status is running
+	useEffect(() => {
+		if (result.status === "running") {
+			const interval = setInterval(() => {
+				setCurrentDuration(getDuration(result.created, new Date().toISOString()));
+			}, 1000);
+			return () => clearInterval(interval);
+		}
+	}, [result.status, result.created])
 
 	return (
 		<div>
@@ -129,7 +140,13 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 										Duration
 									</span>
 									<span className="text-lg font-semibold">
-										{getDuration(result.created, result.modified)}
+										{
+											result.status === "done"
+												? getDuration(result.created, result.modified)
+												
+												: currentDuration
+												  
+										}
 									</span>
 								</div>
 							</div>
