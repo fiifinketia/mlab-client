@@ -32,23 +32,29 @@ export const ModelsList = ({ filter } : { filter : string }) => {
     }, [filter, models]);
 
     return (
-        <div>
-            <br />
-            <div className="flex flex-row justify-start flex-wrap gap-4">
-                {models.map((model) => {
-                    return (
-                        <ModelCard
-                            key={model.id}
-                            owner={model.owner_id}
-                            name={model.name}
-                            lastUpdated={model.modified}
-                            isPrivate={model.private}
-                            description={model.description}
-                            version={model.version}
-                        />
-                    );
-                })}
-            </div>
-        </div>
-    );
+			<div>
+				<br />
+				<div className="flex flex-row justify-start flex-wrap gap-4">
+					{models.length > 0 ? (
+						models.map((model) => {
+							return (
+								<ModelCard
+									key={model.id}
+									owner={model.owner_id}
+									name={model.name}
+									lastUpdated={model.modified}
+									isPrivate={model.private}
+									description={model.description}
+									version={model.version}
+								/>
+							);
+						})
+					) : (
+						<div className="text-center w-full">
+							<h2>No models found</h2>
+						</div>
+					)}
+				</div>
+			</div>
+		);
 }
