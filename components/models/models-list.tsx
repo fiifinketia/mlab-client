@@ -9,11 +9,16 @@ export const ModelsList = ({ filter } : { filter : string }) => {
     const [models, setModels] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models?user_id=${user?.email}`
-        )
-            .then((res) => res.json())
-            .then((data) => setModels(data));
+        try {
+					fetch(
+						`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models?user_id=${user?.email}`
+					)
+						.then((res) => res.json())
+						.then((data) => setModels(data));
+				} catch (error) {
+					console.error("Failed to fetch models", error);
+					setModels([]);
+				}
     }, [user]);
 
     useEffect(() => {
