@@ -9,7 +9,7 @@ export default async function handler(
 ) {
 	const GITHUB_AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN;
 	const GITHUB_ORG_NAME = process.env.GITHUB_ORG_NAME;
-	if (!GITHUB_AUTH_TOKEN) {
+  	if (!GITHUB_AUTH_TOKEN) {
 		throw new Error("GITHUB_AUTH_TOKEN is not defined");
 	}
 	if (!GITHUB_ORG_NAME) {

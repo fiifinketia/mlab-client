@@ -1,45 +1,45 @@
 {
-  "name": "dashboard",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@auth0/nextjs-auth0": "^3.2.0",
-    "@nextui-org/listbox": "^2.1.10",
-    "@nextui-org/react": "2.0.22",
-    "@nextui-org/select": "^2.1.11",
-    "@react-stately/data": "^3.11.0",
-    "@uiw/react-markdown-preview": "^4.1.16",
-    "apexcharts": "^3.35.5",
-    "axios": "^1.6.2",
-    "clsx": "^2.0.0",
-    "framer-motion": "^10.16.0",
-    "next": "^13.5.6",
-    "next-remove-imports": "^1.0.12",
-    "next-themes": "0.2.1",
-    "octokit": "^3.1.2",
-    "react": "^18.2.0",
-    "react-apexcharts": "^1.4.0",
-    "react-dom": "^18.2.0",
-    "react-markdown": "^9.0.0",
-    "rehype-raw": "^7.0.0",
-    "remark-gfm": "^4.0.0",
-    "remark-html": "^16.0.1"
-  },
-  "devDependencies": {
-    "@types/node": "18.7.18",
-    "@types/react": "18.0.20",
-    "@types/react-dom": "18.0.6",
-    "autoprefixer": "^10.4.15",
-    "eslint": "8.23.1",
-    "eslint-config-next": "13.4.16",
-    "postcss": "^8.4.28",
-    "tailwindcss": "^3.3.3",
-    "typescript": "4.8.3"
-  }
+	"name": "mlab",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build -p $APP_PORT -H $APP_HOST",
+		"start": "next start -p $APP_PORT -H $APP_HOST",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@auth0/nextjs-auth0": "^3.2.0",
+		"@nextui-org/listbox": "^2.1.10",
+		"@nextui-org/react": "2.0.22",
+		"@nextui-org/select": "^2.1.11",
+		"@react-stately/data": "^3.11.0",
+		"@uiw/react-markdown-preview": "^4.1.16",
+		"apexcharts": "^3.35.5",
+		"axios": "^1.6.2",
+		"clsx": "^2.0.0",
+		"framer-motion": "^10.16.0",
+		"next": "^13.5.6",
+		"next-remove-imports": "^1.0.12",
+		"next-themes": "0.2.1",
+		"octokit": "^3.1.2",
+		"react": "^18.2.0",
+		"react-apexcharts": "^1.4.0",
+		"react-dom": "^18.2.0",
+		"react-markdown": "^9.0.0",
+		"rehype-raw": "^7.0.0",
+		"remark-gfm": "^4.0.0",
+		"remark-html": "^16.0.1"
+	},
+	"devDependencies": {
+		"@types/node": "18.7.18",
+		"@types/react": "18.0.20",
+		"@types/react-dom": "18.0.6",
+		"autoprefixer": "^10.4.15",
+		"eslint": "8.23.1",
+		"eslint-config-next": "13.4.16",
+		"postcss": "^8.4.28",
+		"tailwindcss": "^3.3.3",
+		"typescript": "4.8.3"
+	}
 }
