@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
-		"start": "NODE_ENV=production next start -p ${process.env.APP_PORT} -H ${process.env.APP_HOST}",
+		"start": "NODE_ENV=production next start -p 8099 -H 0.0.0.0",
 		"lint": "next lint"
 	},
 	"dependencies": {
