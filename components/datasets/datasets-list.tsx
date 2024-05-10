@@ -18,7 +18,7 @@ export const DatasetsList = () => {
 	const [deleteDatasetModal, setDeleteDatasetModal] = useState(false);
 
 	const handleDeleteDataset = (id: string) => {
-		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets/${id}`, {
+		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets/${id}/`, {
 			method: "DELETE",
 		})
 			.then((res) => res.json())
@@ -39,7 +39,7 @@ export const DatasetsList = () => {
 
 	useEffect(() => {
 		fetch(
-			`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets?user_id=${user?.email}`
+			`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets/?user_id=${user?.email}`
 		)
 			.then((res) => res.json())
 			.then((data) => setDatasets(data));

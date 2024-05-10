@@ -30,25 +30,31 @@ export const AddJob = () => {
 		}
 		try {
 			await axios.post(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs`,
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/`,
 				{
 					name: name,
 					description: description,
 					model_id: Array.from(selectedModel)[0],
 					owner_id: user?.email,
-					parameters: useDefaultParams ? models.filter((model: any) => model.id === Array.from(selectedModel)[0])[0].parameters : defaultParams,
+					parameters: useDefaultParams
+						? models.filter(
+								(model: any) => model.id === Array.from(selectedModel)[0]
+						  )[0].parameters
+						: defaultParams,
 				},
 				{
 					headers: {
 						"Content-Type": "application/json",
 					},
 					onUploadProgress(progressEvent: any) {
-						const p = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-						setProgress(p)
+						const p = Math.round(
+							(progressEvent.loaded * 100) / progressEvent.total
+						);
+						setProgress(p);
 						if (p === 100) {
-							setIsLoading(false)
-							onOpenChange()
-							window.location.reload()
+							setIsLoading(false);
+							onOpenChange();
+							window.location.reload();
 						}
 					},
 				}

@@ -336,7 +336,7 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 
 const getResultById = async (resultId: string) => {
 	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/${resultId}`
+		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/${resultId}/`
 	);
 	const result = await response.json();
 	return result;

@@ -30,7 +30,7 @@ export const Jobs = () => {
 		const user_email = localStorage.getItem("user_email");
 		const fetchJobs = async () => {
 			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs?user_id=${user_email}`
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/?user_id=${user_email}`
 			);
 			const data = await res.json();
 			setJobs(data);
@@ -39,7 +39,7 @@ export const Jobs = () => {
 
 		const fetchDatasets = async () => {
 			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets?user_id=${user_email}`
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets/?user_id=${user_email}`
 			);
 			const data = await res.json();
 			setDatasets(data);
