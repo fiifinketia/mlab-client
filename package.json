@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build -p $APP_PORT -H $APP_HOST",
+		"build": "next build",
 		"start": "next start -p $APP_PORT -H $APP_HOST",
 		"lint": "next lint"
 	},
