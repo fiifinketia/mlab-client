@@ -34,7 +34,7 @@ export const ModelsList = ({ filter }: { filter: string }) => {
 		<div>
 			<br />
 			<div className="flex flex-row justify-start flex-wrap gap-4">
-				{!!models ? (
+				{models.length > 0 ? (
 					models.map((model) => {
 						return (
 							<ModelCard
