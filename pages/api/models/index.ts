@@ -7,8 +7,8 @@ export default async function handler(
 ) {
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models`
-  )
+		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models/`
+	);
   const data = await response.json()
 
   res.status(200).json(data)

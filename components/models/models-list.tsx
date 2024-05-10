@@ -11,7 +11,7 @@ export const ModelsList = ({ filter }: { filter: string }) => {
 	useEffect(() => {
 		try {
 			fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models?user_id=${user?.email}`
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models/?user_id=${user?.email}`
 			)
 				.then((res) => res.json())
 				.then((data) => setModels(data));

@@ -72,7 +72,7 @@ export const AddJob = () => {
 	useEffect(() => {
 		const fetchModels = async () => {
 			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models`
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models/`
 			);
 			const data = await res.json();
 			setModels(data);
