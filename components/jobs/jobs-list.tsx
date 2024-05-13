@@ -191,7 +191,7 @@ export const JobsList = ({
 			parameters: data.parameters,
 			name: data.name,
 		};
-		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/train/`, {
+		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/train`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -220,7 +220,7 @@ export const JobsList = ({
 			parameters: data.parameters,
 			name: data.name,
 		};
-		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/test/`, {
+		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/test`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

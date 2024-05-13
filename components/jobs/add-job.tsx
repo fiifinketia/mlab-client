@@ -30,7 +30,7 @@ export const AddJob = () => {
 		}
 		try {
 			await axios.post(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/`,
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}jobs`,
 				{
 					name: name,
 					description: description,
@@ -60,7 +60,7 @@ export const AddJob = () => {
 				}
 			);
 		} catch (error) {
-			alert("Error adding job. Please try again.")
+			alert("Error adding job. Please try again.");
 		}
 	};
 
@@ -73,12 +73,12 @@ export const AddJob = () => {
 
 	const setParameters = (key: string, value: any) => {
 		setDefaultParams((prev: any) => ({ ...prev, [key]: value }));
-	}
+	};
 
 	useEffect(() => {
 		const fetchModels = async () => {
 			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models/`
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models`
 			);
 			const data = await res.json();
 			setModels(data);

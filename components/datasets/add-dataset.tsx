@@ -25,7 +25,7 @@ export const AddDataset = () => {
 	const [progress, setProgress] = useState(0);
 	const ref = React.useRef<HTMLInputElement>(null);
 
-	const upload_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets/`;
+	const upload_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets`;
 	const handleFileUpload = () => new Promise(async (resolve) => {
 		onOpenChange();
 		setProgress(0)

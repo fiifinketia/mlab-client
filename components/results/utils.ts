@@ -2,7 +2,7 @@ import { ChipProps } from "@nextui-org/react";
 
 export const downloadFiles = (result_id: string) => {
 	fetch(
-		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/download/${result_id}/`
+		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/download/${result_id}`
 	)
 		.then((response) => response.blob())
 		.then((blob) => {
@@ -18,7 +18,7 @@ export const downloadFiles = (result_id: string) => {
 
 export const downloadFile = (result_id: string, file_name: string) => {
 	fetch(
-		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/download/${result_id}/${file_name}/`
+		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/download/${result_id}/${file_name}`
 	)
 		.then((response) => response.blob())
 		.then((blob) => {
@@ -46,7 +46,7 @@ export const getResults = async () => {
 	const response = await fetch(
 		`${
 			process.env.NEXT_PUBLIC_API_BASE_URL
-		}/api/results/user/${localStorage.getItem("user_email")}/`
+		}/api/results/user/${localStorage.getItem("user_email")}`
 	);
 	const data = await response.json();
 	return data;
