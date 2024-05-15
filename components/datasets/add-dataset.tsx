@@ -26,7 +26,7 @@ export const AddDataset = () => {
 	const [progress, setProgress] = useState(0);
 	const ref = React.useRef<HTMLInputElement>(null);
 
-	const SUBBMIT_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets`;
+	const SUBMIT_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets`;
 	const handleFileUpload = () =>
 		new Promise(async (resolve) => {
 			onOpenChange();
@@ -38,7 +38,7 @@ export const AddDataset = () => {
 			data.append("owner_id", user?.email || "");
 
 			try {
-				const response = await axios.post(SUBBMIT_url, data);
+				const response = await axios.post(SUBMIT_url, data);
 				resolve(response);
 			} catch (err) {
 				alert("Error uploading dataset");
@@ -126,7 +126,7 @@ export const AddDataset = () => {
 						onOpenChange={() => (!isCompleted ? setIsCompleted(true) : null)}
 						placement="top-center"
 						isDismissable={false}
-						closeButton={!isCompleted}
+						closeButton={false}
 					>
 						<ModalContent>
 							{(onClose) => (
@@ -157,6 +157,14 @@ export const AddDataset = () => {
 											</p>
 										</div>
 									</ModalBody>
+									<ModalFooter>
+										<Button
+											color="success"
+											onClick={() => setIsCompleted(false)}
+										>
+											Done
+										</Button>
+									</ModalFooter>
 								</div>
 							)}
 						</ModalContent>
