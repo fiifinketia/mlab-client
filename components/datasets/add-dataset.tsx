@@ -15,6 +15,10 @@ import {
 import React, { useState } from "react";
 import axios, { AxiosRequestConfig } from "axios";
 
+function makeGitPath(name: string) {
+	return name.toLowerCase().replace(" ", "-") + ".git";
+}
+
 export const AddDataset = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const { user } = useUser();
@@ -41,7 +45,7 @@ export const AddDataset = () => {
 				const response = await axios.post(SUBMIT_url, data);
 				resolve(response);
 			} catch (err) {
-				alert("Error uploading dataset");
+				alert("Error creating new project, project name might exist");
 			} finally {
 				setIsCompleted(true);
 			}
@@ -134,25 +138,26 @@ export const AddDataset = () => {
 									<ModalHeader>Dataset Created</ModalHeader>
 									<ModalBody>
 										<div className="flex flex-col gap-1">
-											<p className="text-sm text-warning">
+											<p className="text-sm text-blue-600">
 												Follow these steps to push your local git repository
 											</p>
-											<p className="text-sm text-warning">
+											<p className="text-sm text-white">
 												<code>git init</code>
 											</p>
-											<p className="text-sm text-warning">
+											<p className="text-sm text-white">
 												<code>git add .</code>
 											</p>
-											<p className="text-sm text-warning">
+											<p className="text-sm text-white">
 												<code>git commit -m &apos;initial commit&apos;</code>
 											</p>
-											<p className="text-sm text-warning">
+											<p className="text-sm text-white">
 												<code>
 													git remote set-url mlab
-													git@git.droplet.com:path-to-project/project.git
+													disal@18.157.151.201:disal/mlab/filez/datasets/`$
+													{makeGitPath(datasetName)}`
 												</code>
 											</p>
-											<p className="text-sm text-warning">
+											<p className="text-sm text-white">
 												<code>git push mlab master</code>
 											</p>
 										</div>

@@ -56,7 +56,6 @@ export const DatasetsList = () => {
 							owner={dataset.owner_id}
 							name={dataset.name}
 							lastUpdated={dataset.modified}
-							content_type={dataset.content_type}
 							isPrivate={dataset.private}
 							contextOpen={contextOpen}
 						/>

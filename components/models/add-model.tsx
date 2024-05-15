@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
 import { Octokit } from "octokit";
@@ -17,10 +17,15 @@ import {
 import { Select, SelectItem } from "@nextui-org/select";
 import { TrashIcon } from "../icons/accounts/trash-icon";
 
+function makeGitPath(name: string) {
+	return name.toLowerCase().replace(" ", "-") + ".git";
+}
+
 export const AddModel = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const { user } = useUser();
 	const router = useRouter();
+	const [isCompleted, setIsCompleted] = useState(false);
 	const onAddModel = async () => {
 		onOpenChange();
 		if (user === undefined) {
@@ -39,7 +44,6 @@ export const AddModel = () => {
 						name: name,
 						description: description,
 						version: version,
-						// gh_project_name: gh_project_name,
 						owner_id: user?.email,
 						private: isPrivate,
 						parameters: parameters,
@@ -200,6 +204,54 @@ export const AddModel = () => {
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
+			{isCompleted && (
+				<Modal
+					isOpen={isCompleted}
+					onOpenChange={() => (!isCompleted ? setIsCompleted(true) : null)}
+					placement="top-center"
+					isDismissable={false}
+					closeButton={false}
+				>
+					<ModalContent>
+						{(onClose) => (
+							<div className="flex flex-col gap-1">
+								<ModalHeader>Dataset Created</ModalHeader>
+								<ModalBody>
+									<div className="flex flex-col gap-1">
+										<p className="text-sm text-blue-600">
+											Follow these steps to push your local git repository
+										</p>
+										<p className="text-sm text-white">
+											<code>git init</code>
+										</p>
+										<p className="text-sm text-white">
+											<code>git add .</code>
+										</p>
+										<p className="text-sm text-white">
+											<code>git commit -m &apos;initial commit&apos;</code>
+										</p>
+										<p className="text-sm text-white">
+											<code>
+												git remote set-url mlab
+												disal@18.157.151.201:disal/mlab/filez/datasets/`$
+												{makeGitPath(name)}`
+											</code>
+										</p>
+										<p className="text-sm text-white">
+											<code>git push mlab master</code>
+										</p>
+									</div>
+								</ModalBody>
+								<ModalFooter>
+									<Button color="success" onClick={() => setIsCompleted(false)}>
+										Done
+									</Button>
+								</ModalFooter>
+							</div>
+						)}
+					</ModalContent>
+				</Modal>
+			)}
 		</div>
 	);
 };
