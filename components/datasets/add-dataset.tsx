@@ -44,6 +44,7 @@ export const AddDataset = () => {
 			try {
 				const response = await axios.post(SUBMIT_url, data);
 				resolve(response);
+				setIsCompleted(true);
 			} catch (err: any) {
 				// If error is 409, then the model already exists
 				if (err.status === 409) {
@@ -55,8 +56,6 @@ export const AddDataset = () => {
 				} else {
 					alert("Internal server error, contact admin");
 				}
-			} finally {
-				setIsCompleted(true);
 			}
 		});
 
@@ -174,7 +173,10 @@ export const AddDataset = () => {
 									<ModalFooter>
 										<Button
 											color="success"
-											onClick={() => setIsCompleted(false)}
+											onClick={() => {
+												setIsCompleted(false);
+												window.location.reload();
+											}}
 										>
 											Done
 										</Button>

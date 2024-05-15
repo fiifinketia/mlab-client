@@ -58,7 +58,7 @@ export const AddModel = () => {
 					detail: (await res.json()).detail,
 				};
 			}
-			window.location.reload();
+			setIsCompleted(true);
 		} catch (err: any) {
 			// If error is 409, then the model already exists
 			if (err.status === 409) {
@@ -241,7 +241,13 @@ export const AddModel = () => {
 									</div>
 								</ModalBody>
 								<ModalFooter>
-									<Button color="success" onClick={() => setIsCompleted(false)}>
+									<Button
+										color="success"
+										onClick={() => {
+											setIsCompleted(false);
+											window.location.reload();
+										}}
+									>
 										Done
 									</Button>
 								</ModalFooter>
