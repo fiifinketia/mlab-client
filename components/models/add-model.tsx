@@ -39,7 +39,7 @@ export const AddModel = () => {
 						name: name,
 						description: description,
 						version: version,
-						gh_project_name: gh_project_name,
+						// gh_project_name: gh_project_name,
 						owner_id: user?.email,
 						private: isPrivate,
 						parameters: parameters,
@@ -74,22 +74,21 @@ export const AddModel = () => {
 	const [name, setName] = React.useState("");
 	const [description, setDescription] = React.useState("");
 	const [version, setVersion] = React.useState("");
-	const [gh_project_name, setGh_project_name] = React.useState("");
 	const [newParameter, setNewParameter] = React.useState<any>("");
 	const [isPrivate, setIsPrivate] = React.useState(false);
 	const [parameters, setParameters] = React.useState<any>({});
 	const [defaultModel, setDefaultModel] = React.useState("");
-	const [ghProjects, setGhProjects] = React.useState<any[]>([]);
+	// const [ghProjects, setGhProjects] = React.useState<any[]>([]);
 
-	React.useEffect(() => {
-		const fetchOrgRepo = async () => {
-			const res = await fetch("/api/github/org-repos");
+	// React.useEffect(() => {
+	// 	const fetchOrgRepo = async () => {
+	// 		const res = await fetch("/api/github/org-repos");
 
-			const data = await res.json();
-			setGhProjects(data);
-		};
-		fetchOrgRepo();
-	}, []);
+	// 		const data = await res.json();
+	// 		setGhProjects(data);
+	// 	};
+	// 	fetchOrgRepo();
+	// }, []);
 
 	const setParameterValues = (key: string, value: any) => {
 		setParameters((prev: any) => ({ ...prev, [key]: value }));
@@ -105,13 +104,6 @@ export const AddModel = () => {
 		if (newParameter === "") return;
 		setParameters((prev: any) => ({ ...prev, [newParameter]: "" }));
 		setNewParameter("");
-	};
-
-	const setModel = async (project: string) => {
-		const model = ghProjects.find((p: any) => p.name === project);
-		setGh_project_name(model.name);
-		setDescription(model.description);
-		setName(model.name);
 	};
 
 	return (
@@ -135,22 +127,12 @@ export const AddModel = () => {
 				<ModalContent>
 					<ModalHeader>Add Model</ModalHeader>
 					<ModalBody>
-						<Select
-							label="Github Project"
-							placeholder="Select Project"
-							onChange={(e) => setModel(e.target.value)}
-							required
-						>
-							{ghProjects.map((project: any) => (
-								<SelectItem
-									value={project.name}
-									textValue={project.name}
-									key={project.name}
-								>
-									{project.name}
-								</SelectItem>
-							))}
-						</Select>
+						<Input
+							label="Name"
+							placeholder="Name"
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+						/>
 						<Input
 							label="Description"
 							placeholder="Description"
@@ -160,7 +142,6 @@ export const AddModel = () => {
 						<Input
 							label="Version"
 							placeholder="Version"
-							isDisabled={gh_project_name === ""}
 							onChange={(e) => setVersion(e.target.value)}
 							required
 						/>
@@ -173,7 +154,6 @@ export const AddModel = () => {
 
 						<Switch
 							isSelected={isPrivate}
-							isDisabled={gh_project_name === ""}
 							onChange={() => setIsPrivate(!isPrivate)}
 						>
 							Private
@@ -190,7 +170,6 @@ export const AddModel = () => {
 								name={param[0]}
 								value={param[1]}
 								setValue={setParameterValues}
-								isDisabled={gh_project_name === ""}
 								removeParameter={removeParameter}
 							/>
 						))}
@@ -199,16 +178,10 @@ export const AddModel = () => {
 								label="Name"
 								placeholder="Name"
 								value={newParameter}
-								isDisabled={gh_project_name === ""}
 								onChange={(e) => setNewParameter(e.target.value)}
 							/>
 
-							<Button
-								color="primary"
-								size="sm"
-								onClick={addNewParameter}
-								isDisabled={gh_project_name === ""}
-							>
+							<Button color="primary" size="sm" onClick={addNewParameter}>
 								Add Parameter
 							</Button>
 						</div>
@@ -220,12 +193,7 @@ export const AddModel = () => {
 							className="w-full"
 							onClick={onAddModel}
 							// Disabled if any of the required fields are empty
-							isDisabled={
-								name === "" ||
-								description === "" ||
-								version === "" ||
-								gh_project_name === ""
-							}
+							isDisabled={name === "" || description === "" || version === ""}
 						>
 							Add Model
 						</Button>
