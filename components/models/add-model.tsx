@@ -63,11 +63,9 @@ export const AddModel = () => {
 			// If error is 409, then the model already exists
 			if (err.status === 409) {
 				alert("Model already exists. Please choose a different name.");
-			}
-			if (err.status === 422) {
+			} else if (err.status === 422) {
 				alert("Please fill out all required fields.");
-			}
-			if (err.status === 404) {
+			} else if (err.status === 404) {
 				alert(err.detail);
 			} else {
 				alert("Internal server error, contact admin");
@@ -160,7 +158,7 @@ export const AddModel = () => {
 							isSelected={isPrivate}
 							onChange={() => setIsPrivate(!isPrivate)}
 						>
-							Private
+							{isPrivate ? "Private" : "Public"}
 						</Switch>
 						<div className="flex flex-row gap-2 items-center">
 							<h3 className="text-lg font-semibold">Parameters</h3>

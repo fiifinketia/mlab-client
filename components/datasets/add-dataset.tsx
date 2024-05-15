@@ -44,8 +44,17 @@ export const AddDataset = () => {
 			try {
 				const response = await axios.post(SUBMIT_url, data);
 				resolve(response);
-			} catch (err) {
-				alert("Error creating new project, project name might exist");
+			} catch (err: any) {
+				// If error is 409, then the model already exists
+				if (err.status === 409) {
+					alert("Dataset already exists. Please choose a different name.");
+				} else if (err.status === 422) {
+					alert("Please fill out all required fields.");
+				} else if (err.status === 404) {
+					alert(err.detail);
+				} else {
+					alert("Internal server error, contact admin");
+				}
 			} finally {
 				setIsCompleted(true);
 			}
