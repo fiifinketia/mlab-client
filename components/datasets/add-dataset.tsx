@@ -13,10 +13,10 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import React, { useState } from "react";
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 
 function makeGitPath(name: string) {
-	return name.toLowerCase().replace(" ", "-") + ".git";
+	return name.toLowerCase().replaceAll(" ", "-") + ".git";
 }
 
 export const AddDataset = () => {
@@ -145,7 +145,7 @@ export const AddDataset = () => {
 								<div className="flex flex-col gap-1">
 									<ModalHeader>Dataset Created</ModalHeader>
 									<ModalBody>
-										<div className="flex flex-col gap-1">
+										<div className="flex flex-col gap-1 text-balance">
 											<p className="text-sm text-blue-600">
 												Follow these steps to push your local git repository
 											</p>
@@ -160,8 +160,8 @@ export const AddDataset = () => {
 											</p>
 											<p className="text-sm text-white">
 												<code>
-													git remote set-url mlab
-													disal@18.157.151.201:disal/mlab/filez/datasets/`$
+													git remote add mlab
+													ssh://disal@18.157.151.201:6000/~/disal/mlab/filez/datasets/`$
 													{makeGitPath(datasetName)}`
 												</code>
 											</p>

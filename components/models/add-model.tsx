@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
-import { Octokit } from "octokit";
 import {
 	Button,
 	Input,
@@ -18,7 +17,7 @@ import { Select, SelectItem } from "@nextui-org/select";
 import { TrashIcon } from "../icons/accounts/trash-icon";
 
 function makeGitPath(name: string) {
-	return name.toLowerCase().replace(" ", "-") + ".git";
+	return name.toLowerCase().replaceAll(" ", "-") + ".git";
 }
 
 export const AddModel = () => {
@@ -215,7 +214,7 @@ export const AddModel = () => {
 							<div className="flex flex-col gap-1">
 								<ModalHeader>Dataset Created</ModalHeader>
 								<ModalBody>
-									<div className="flex flex-col gap-1">
+									<div className="flex flex-col gap-1 text-balance">
 										<p className="text-sm text-blue-600">
 											Follow these steps to push your local git repository
 										</p>
@@ -230,8 +229,8 @@ export const AddModel = () => {
 										</p>
 										<p className="text-sm text-white">
 											<code>
-												git remote set-url mlab
-												disal@18.157.151.201:disal/mlab/filez/datasets/`$
+												git remote add mlab
+												ssh://disal@18.157.151.201:6000/~/disal/mlab/filez/datasets/`$
 												{makeGitPath(name)}`
 											</code>
 										</p>
