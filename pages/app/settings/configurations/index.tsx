@@ -17,7 +17,7 @@ const Configurations: NextPage = () => {
 		const fetchKeyPair = async () => {
 			try {
 				const res = await fetch(
-					`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/iam/${user.email}/get_key_pair`
+					`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/iam/ssh_key?user_id=${user.email}`
 				);
 				if (res.status !== 200) {
 					throw {
@@ -43,7 +43,7 @@ const Configurations: NextPage = () => {
 		if (user === undefined) return;
 		try {
 			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/iam/${user.email}/ssh_key`,
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/iam/ssh_key?user_id=${user.email}`,
 				{
 					method: "POST",
 					headers: {
