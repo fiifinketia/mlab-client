@@ -1,6 +1,7 @@
 import { useUser } from "@auth0/nextjs-auth0/client";
 import {
 	Button,
+	Code,
 	Input,
 	Modal,
 	ModalBody,
@@ -149,25 +150,15 @@ export const AddDataset = () => {
 											<p className="text-sm text-blue-600">
 												Follow these steps to push your local git repository
 											</p>
-											<p className="text-sm text-white">
-												<code>git init</code>
-											</p>
-											<p className="text-sm text-white">
-												<code>git add .</code>
-											</p>
-											<p className="text-sm text-white">
-												<code>git commit -m &apos;initial commit&apos;</code>
-											</p>
-											<p className="text-sm text-white">
-												<code>
-													git remote add mlab
-													ssh://disal@18.157.151.201:6000/~/disal/mlab/filez/datasets/`$
-													{makeGitPath(datasetName)}`
-												</code>
-											</p>
-											<p className="text-sm text-white">
-												<code>git push mlab master</code>
-											</p>
+											<Code>git init</Code>
+											<Code>git add .</Code>
+											<Code>git commit -m &apos;initial commit&apos;</Code>
+											<Code>
+												git remote add mlab
+												ssh://disal@18.157.151.201:6000/~/disal/mlab/filez/datasets/`$
+												{makeGitPath(datasetName)}`
+											</Code>
+											<Code>git push mlab master</Code>
 										</div>
 									</ModalBody>
 									<ModalFooter>
