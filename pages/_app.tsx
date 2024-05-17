@@ -8,13 +8,13 @@ import { SettingsLayout } from "../components/layout/settings";
 import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const router = useRouter();
-  // If route is /app, display the layout component
-  if (router.pathname.startsWith("/app")) {
-    if (router.pathname.startsWith("/app/settings")) {
+	const router = useRouter();
+	// If route is /app, display the layout component
+	if (router.pathname.startsWith("/app")) {
+		if (router.pathname.startsWith("/app/settings")) {
 			return (
 				<NextThemesProvider defaultTheme="dark" attribute="class">
-					<NextUIProvider>
+					<NextUIProvider navigate={router.push}>
 						<UserProvider>
 							<SettingsLayout>
 								<Component {...pageProps} />
@@ -24,23 +24,23 @@ function MyApp({ Component, pageProps }: AppProps) {
 				</NextThemesProvider>
 			);
 		}
-    return (
-      <NextThemesProvider defaultTheme="dark" attribute="class">
-        <NextUIProvider>
-          <UserProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </UserProvider>
-        </NextUIProvider>
-      </NextThemesProvider>
-    );
-  }
+		return (
+			<NextThemesProvider defaultTheme="dark" attribute="class">
+				<NextUIProvider>
+					<UserProvider>
+						<Layout>
+							<Component {...pageProps} />
+						</Layout>
+					</UserProvider>
+				</NextUIProvider>
+			</NextThemesProvider>
+		);
+	}
 	return (
 		<NextThemesProvider defaultTheme="dark" attribute="class">
 			<NextUIProvider>
 				<UserProvider>
-          <Component {...pageProps} />
+					<Component {...pageProps} />
 				</UserProvider>
 			</NextUIProvider>
 		</NextThemesProvider>
