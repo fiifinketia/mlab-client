@@ -43,7 +43,7 @@ const Configurations: NextPage = () => {
 		if (user === undefined) return;
 		try {
 			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/iam/${user.email}/gen_key_pair`,
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/iam/${user.email}/ssh_key`,
 				{
 					method: "POST",
 					headers: {
