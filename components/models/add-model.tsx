@@ -219,15 +219,17 @@ export const AddModel = () => {
 										<p className="text-sm text-blue-600">
 											Follow these steps to push your local git repository
 										</p>
-										<Code>git init</Code>
-										<Code>git add .</Code>
-										<Code>git commit -m &apos;initial commit&apos;</Code>
-										<Code>
-											git remote add mlab
-											ssh://disal@18.157.151.201:6000/~/disal/mlab/filez/datasets/`$
-											{makeGitPath(name)}`
+										<Code className="text-wrap">git init</Code>
+										<Code className="text-wrap">git add .</Code>
+										<Code className="text-wrap">
+											git commit -m &apos;initial commit&apos;
 										</Code>
-										<Code>git push mlab master</Code>
+										<Code className="text-wrap">
+											git remote add mlab
+											ssh://disal@18.157.151.201:6000/~/disal/mlab/filez/models/
+											{makeGitPath(name)}
+										</Code>
+										<Code className="text-wrap">git push mlab master</Code>
 									</div>
 								</ModalBody>
 								<ModalFooter>
