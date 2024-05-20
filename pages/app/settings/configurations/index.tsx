@@ -3,7 +3,6 @@ import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { NextPage } from "next";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import React from "react";
-import { ClipboardIcon } from "../../../../components/icons/clipboard-icon";
 
 const Configurations: NextPage = () => {
 	const { user } = useUser();
@@ -33,7 +32,7 @@ const Configurations: NextPage = () => {
 				}
 
 				const data = await res.json();
-				setPubKey(data.pub_key);
+				setPubKey(data.public_key);
 			} catch (error: any) {
 				if (error.status === 404) {
 					setPubKey("");
@@ -46,7 +45,6 @@ const Configurations: NextPage = () => {
 		fetchKeyPair();
 	}, [user]);
 
-	const copyText = (id: string) => () => {};
 	const submitPubKey = async () => {
 		if (user === undefined) return;
 		try {
@@ -57,6 +55,9 @@ const Configurations: NextPage = () => {
 					headers: {
 						"Content-Type": "application/json",
 					},
+					body: JSON.stringify({
+						public_key: pubKey,
+					}),
 				}
 			);
 			if (res.status !== 200) {
@@ -69,7 +70,7 @@ const Configurations: NextPage = () => {
 
 			const data = await res.json();
 			console.log(data);
-			setPubKey(data.pub_key);
+			setPubKey(data.public_key);
 		} catch (error: any) {
 			alert("Internal server error, contact admin");
 		}
