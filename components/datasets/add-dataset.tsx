@@ -157,8 +157,15 @@ export const AddDataset = () => {
 											</Code>
 											<Code className="text-wrap">
 												git remote add mlab
-												ssh://disal@18.157.151.201:6000/~/disal/mlab/filez/datasets/
+												ssh://disal@appatechlab.com:6000/~/disal/mlab/filez/datasets/
 												{makeGitPath(datasetName)}
+											</Code>
+											<p className="text-wrap">
+												{" "}
+												If head repository name is main, change to master
+											</p>
+											<Code className="text-wrap">
+												git branch -M main master
 											</Code>
 											<Code className="text-wrap">git push mlab master</Code>
 										</div>
