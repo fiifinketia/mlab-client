@@ -151,23 +151,16 @@ export const AddDataset = () => {
 												Follow these steps to push your local git repository
 											</p>
 											<Code className="text-wrap">git init</Code>
+											<Code className="text-wrap">
+												git clone -o mlab
+												ssh://disal@appatechlab.com:6000/~/disal/mlab/filez/datasets/
+												{makeGitPath(datasetName)}
+											</Code>
 											<Code className="text-wrap">git add .</Code>
 											<Code className="text-wrap">
 												git commit -m &apos;initial commit&apos;
 											</Code>
-											<Code className="text-wrap">
-												git remote add mlab
-												ssh://disal@appatechlab.com:6000/~/disal/mlab/filez/datasets/
-												{makeGitPath(datasetName)}
-											</Code>
-											<p className="text-wrap">
-												{" "}
-												If head repository name is main, change to master
-											</p>
-											<Code className="text-wrap">
-												git branch -M main master
-											</Code>
-											<Code className="text-wrap">git push mlab master</Code>
+											<Code className="text-wrap">git push</Code>
 										</div>
 									</ModalBody>
 									<ModalFooter>
