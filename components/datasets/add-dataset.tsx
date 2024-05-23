@@ -1,6 +1,7 @@
 import { useUser } from "@auth0/nextjs-auth0/client";
 import {
 	Button,
+	Code,
 	Input,
 	Modal,
 	ModalBody,
@@ -13,59 +14,51 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import React, { useState } from "react";
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
+
+function makeGitPath(name: string) {
+	return name.toLowerCase().replaceAll(" ", "-") + ".git";
+}
 
 export const AddDataset = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const { user } = useUser();
 	const [datasetName, setDatasetName] = useState("");
 	const [datasetDescription, setDatasetDescription] = useState("");
+	const [projectName, setProjectName] = useState("");
 	const [isPrivate, setIsPrivate] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
+	const [isCompleted, setIsCompleted] = useState(false);
 	const [progress, setProgress] = useState(0);
 	const ref = React.useRef<HTMLInputElement>(null);
 
-	const upload_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets`;
-	const handleFileUpload = () => new Promise(async (resolve) => {
-		onOpenChange();
-		setProgress(0)
-		setIsLoading(true)
-		if(ref.current?.files){
-			const file = ref.current.files[0]
-			const data = new FormData()
-			data.append('file', file)
-			data.append('name', datasetName)
-			data.append('description', datasetDescription)
-			data.append('private', String(isPrivate))
-			data.append('owner_id', user?.email || "")
+	const SUBMIT_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets`;
+	const handleFileUpload = () =>
+		new Promise(async (resolve) => {
+			onOpenChange();
+			setIsCompleted(false);
+			const data = new FormData();
+			data.append("name", datasetName);
+			data.append("description", datasetDescription);
+			data.append("private", String(isPrivate));
+			data.append("owner_id", user?.email || "");
 
-	
-			const config: AxiosRequestConfig = {
-				headers: { 
-					'content-type': 'multipart/form-data',
-					'Filename': file.name
-			 	},
-				onUploadProgress: (event: any) => {
-					const p = Math.round((event.loaded * 100) / event.total);
-					setProgress(p)
-					if (p === 100) {
-						setIsLoading(false)
-						onOpenChange()
-						window.location.reload()
-					}
-				},
-				
+			try {
+				const response = await axios.post(SUBMIT_url, data);
+				resolve(response);
+				setIsCompleted(true);
+			} catch (err: any) {
+				// If error is 409, then the model already exists
+				if (err.status === 409) {
+					alert("Dataset already exists. Please choose a different name.");
+				} else if (err.status === 422) {
+					alert("Please fill out all required fields.");
+				} else if (err.status === 404) {
+					alert(err.detail);
+				} else {
+					alert("Internal server error, contact admin");
+				}
 			}
-	
-			try{
-				const response = await axios.post(upload_url, data, config)
-				resolve(response)
-			}
-			catch(err){
-				alert("Error uploading dataset")
-			}
-	   }
-	})
+		});
 
 	return (
 		<div>
@@ -91,10 +84,11 @@ export const AddDataset = () => {
 										value={user?.email || ""}
 									/>
 									<Input
-										label="name"
+										label="Unique Name"
 										name="name"
 										isRequired
 										variant="bordered"
+										placeholder="Unique Name without spaces"
 										value={datasetName}
 										onChange={(e) => setDatasetName(e.target.value)}
 									/>
@@ -107,29 +101,31 @@ export const AddDataset = () => {
 										value={datasetDescription}
 										onChange={(e) => setDatasetDescription(e.target.value)}
 									/>
-									<Input
+									{/* <Input
 										variant="bordered"
 										placeholder="Upload dataset here"
 										isRequired
 										name="file"
 										type="file"
 										ref={ref}
-									/>
+									/> */}
 									<Switch
 										name="private"
 										value={String(isPrivate)}
 										onChange={() => setIsPrivate(!isPrivate)}
 									>
-										{
-											isPrivate ? "Private" : "Public"
-										}
+										{isPrivate ? "Private" : "Public"}
 									</Switch>
 								</ModalBody>
 								<ModalFooter>
 									<Button color="danger" variant="flat" onClick={onClose}>
 										Close
 									</Button>
-									<Button color="primary" type="button" onClick={handleFileUpload}>
+									<Button
+										color="primary"
+										type="button"
+										onClick={handleFileUpload}
+									>
 										Add Dataset
 									</Button>
 								</ModalFooter>
@@ -137,35 +133,60 @@ export const AddDataset = () => {
 						)}
 					</ModalContent>
 				</Modal>
-				{
-					isLoading && (
-						<Modal
-							isOpen={isLoading}
-							onOpenChange={() => !isLoading ? setIsLoading(false): null}
-							placement="top-center"
-							isDismissable={false}
-							closeButton={!isLoading}
-						>
-							<ModalContent>
-								{(onClose) => (
-									<div className="flex flex-col gap-1">
-										<ModalHeader>Uploading Dataset</ModalHeader>
-										<ModalBody>
-											<div className="flex flex-col gap-1">
-												<p className="text-sm text-warning">Please wait while we upload your dataset</p>
-												<p className="text-sm text-warning">Do not close this window</p>
-												<p className="text-sm text-warning">This may take a while depending on the size of your dataset</p>
-												<p className="text-lg text-primary">Uploading {progress}%</p>
-											</div>
-											<Progress value={progress} />
-										</ModalBody>
-									</div>
-								)}
-							</ModalContent>
-						</Modal>
-					)
-				}
-				<iframe name="submit_file" style={{display: 'none'}}></iframe>
+				{isCompleted && (
+					<Modal
+						isOpen={isCompleted}
+						onOpenChange={() => (!isCompleted ? setIsCompleted(true) : null)}
+						placement="top-center"
+						isDismissable={false}
+						closeButton={false}
+					>
+						<ModalContent>
+							{(onClose) => (
+								<div className="flex flex-col gap-1">
+									<ModalHeader>Dataset Created</ModalHeader>
+									<ModalBody>
+										<div className="flex flex-col gap-1 text-balance">
+											<p className="text-sm text-blue-600">
+												Follow these steps to push your local git repository
+											</p>
+											<Code className="text-wrap">git init</Code>
+											<Code className="text-wrap">git add .</Code>
+											<Code className="text-wrap">
+												git commit -m &apos;initial commit&apos;
+											</Code>
+											<Code className="text-wrap">
+												git remote add mlab
+												ssh://disal@appatechlab.com:6000/~/disal/mlab/filez/datasets/
+												{makeGitPath(datasetName)}
+											</Code>
+											<p className="text-wrap">
+												{" "}
+												If head repository name is main, change to master
+											</p>
+											<Code className="text-wrap">
+												git branch -M main master
+											</Code>
+											<Code className="text-wrap">git push mlab master</Code>
+										</div>
+									</ModalBody>
+									<ModalFooter>
+										<Button
+											color="success"
+											onClick={() => {
+												setIsCompleted(false);
+												window.location.reload();
+											}}
+										>
+											Done
+										</Button>
+									</ModalFooter>
+								</div>
+							)}
+						</ModalContent>
+					</Modal>
+				)}
+				<iframe name="submit_file" style={{ display: "none" }}></iframe>
 			</>
 		</div>
 	);

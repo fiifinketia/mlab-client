@@ -29,7 +29,6 @@ interface Props {
 	name: string;
 	lastUpdated: string;
 	isPrivate: boolean;
-	content_type: string;
 	contextOpen: (id: string) => void;
 }
 
@@ -39,8 +38,7 @@ export const DatasetCard = ({
 	name,
 	lastUpdated,
 	isPrivate,
-	content_type,
-	contextOpen
+	contextOpen,
 }: Props) => {
 	return (
 		<div>
@@ -64,18 +62,15 @@ export const DatasetCard = ({
 					{/* Dataset title and last updated time */}
 					<div className="flex items-center gap-6">
 						<Tooltip content={name}>
-							<span className="text-xl text-white font-semibold truncate overflow-y-hidden">{name}</span>
+							<span className="text-xl text-white font-semibold truncate overflow-y-hidden">
+								{name}
+							</span>
 						</Tooltip>
 					</div>
 					<div className="flex items-center gap-6">
 						<div>
 							<span className="text-xs text-white font-semibold">
 								{new Date(lastUpdated).toLocaleDateString()}
-							</span>
-						</div>
-						<div>
-							<span className="text-xs text-white font-semibold">
-								{content_type}
 							</span>
 						</div>
 					</div>

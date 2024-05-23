@@ -20,8 +20,6 @@ export const AddJob = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const { user } = useUser();
 	const router = useRouter();
-	const [isLoading, setIsLoading] = useState(false);
-	const [progress, setProgress] = useState(0);
 	const onAddJob = async () => {
 		onOpenChange();
 		if (user === undefined) {
@@ -30,7 +28,7 @@ export const AddJob = () => {
 		}
 		try {
 			await axios.post(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}jobs`,
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs`,
 				{
 					name: name,
 					description: description,
@@ -46,20 +44,10 @@ export const AddJob = () => {
 					headers: {
 						"Content-Type": "application/json",
 					},
-					onUploadProgress(progressEvent: any) {
-						const p = Math.round(
-							(progressEvent.loaded * 100) / progressEvent.total
-						);
-						setProgress(p);
-						if (p === 100) {
-							setIsLoading(false);
-							onOpenChange();
-							window.location.reload();
-						}
-					},
 				}
 			);
 		} catch (error) {
+			console.log(error);
 			alert("Error adding job. Please try again.");
 		}
 	};
