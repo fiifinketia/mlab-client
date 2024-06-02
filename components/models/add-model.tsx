@@ -221,10 +221,11 @@ export const AddModel = () => {
 										</p>
 										<Code className="text-wrap">git init</Code>
 										<Code className="text-wrap">
-											git clone -o mlab
-											ssh://disal@appatechlab.com:6000/~/disal/mlab/filez/datasets/
+											git clone
+											ssh://disal@appatechlab.com:6000/~/disal/mlab/filez/models/
 											{makeGitPath(name)}
 										</Code>
+										<p className="text-wrap"> Add you files </p>
 										<Code className="text-wrap">git add .</Code>
 										<Code className="text-wrap">
 											git commit -m &apos;initial commit&apos;

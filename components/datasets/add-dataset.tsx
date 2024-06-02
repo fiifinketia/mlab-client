@@ -36,14 +36,13 @@ export const AddDataset = () => {
 		new Promise(async (resolve) => {
 			onOpenChange();
 			setIsCompleted(false);
-			const data = new FormData();
-			data.append("name", datasetName);
-			data.append("description", datasetDescription);
-			data.append("private", String(isPrivate));
-			data.append("owner_id", user?.email || "");
-
 			try {
-				const response = await axios.post(SUBMIT_url, data);
+				const response = await axios.post(SUBMIT_url, {
+					name: datasetName,
+					description: datasetDescription,
+					owner_id: user?.email,
+					private: isPrivate,
+				});
 				resolve(response);
 				setIsCompleted(true);
 			} catch (err: any) {
