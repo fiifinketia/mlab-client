@@ -32,6 +32,11 @@ export interface paths {
      * @description Get a model.
      */
     get: operations["get_modle_api_models__model_id__get"];
+    /**
+     * Delete a model
+     * @description Delete a model.
+     */
+    delete: operations["delete_model_api_models__model_id__delete"];
   };
   "/api/jobs": {
     /**
@@ -77,6 +82,11 @@ export interface paths {
      * @description Get a dataset.
      */
     get: operations["fetch_dataset_api_datasets__dataset_id__get"];
+    /**
+     * Delete a dataset
+     * @description Delete a dataset.
+     */
+    delete: operations["delete_dataset_api_datasets__dataset_id__delete"];
   };
   "/api/results/user/{user_id}": {
     /**
@@ -158,8 +168,6 @@ export interface components {
        * @default false
        */
       private?: boolean;
-      /** Default Model */
-      default_model?: string;
     };
     /**
      * Dataset
@@ -168,7 +176,8 @@ export interface components {
      *   "id": "uuid",
      *   "name": "string",
      *   "description": "string",
-     *   "path": "string",
+     *   "git_name": "string",
+     *   "clone_url": "string",
      *   "private": true,
      *   "owner_id": "string",
      *   "created": "datetime",
@@ -185,8 +194,10 @@ export interface components {
       name: string;
       /** Description */
       description?: string;
-      /** Path */
-      path: string;
+      /** Git Name */
+      git_name: string;
+      /** Clone Url */
+      clone_url: string;
       /**
        * Private
        * @default false
@@ -207,7 +218,7 @@ export interface components {
     };
     /**
      * DatasetInForm
-     * @description Dataset form model.
+     * @description Dataset in
      */
     DatasetInForm: {
       /** Name */
@@ -216,11 +227,6 @@ export interface components {
       description: string;
       /** Owner Id */
       owner_id: string;
-      /**
-       * File
-       * Format: binary
-       */
-      file: string;
       /** Private */
       private: boolean;
     };
@@ -235,8 +241,10 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Path */
-      path: string;
+      /** Git Name */
+      git_name: string;
+      /** Clone Url */
+      clone_url: string;
       /** Private */
       private: boolean;
       /** Owner Id */
@@ -276,8 +284,6 @@ export interface components {
      *   "model_id": "uuid",
      *   "model_name": "string",
      *   "owner_id": "string",
-     *   "model_branch": "string",
-     *   "dataset_branch": "string",
      *   "parameters": "{\"json\": \"json\"}",
      *   "created": "datetime",
      *   "modified": "datetime",
@@ -319,10 +325,6 @@ export interface components {
       model_name: string;
       /** Owner Id */
       owner_id: string;
-      /** Model Branch */
-      model_branch?: string;
-      /** Dataset Branch */
-      dataset_branch?: string;
       /**
        * Parameters
        * Format: json-string
@@ -358,8 +360,6 @@ export interface components {
       model_id: string;
       /** Parameters */
       parameters?: Record<string, never>;
-      /** Branch */
-      branch?: string;
     };
     /**
      * Model
@@ -371,11 +371,11 @@ export interface components {
      *   "version": "string",
      *   "created": "datetime",
      *   "modified": "datetime",
-     *   "path": "string",
+     *   "git_name": "string",
+     *   "clone_url": "string",
      *   "owner_id": "string",
      *   "parameters": "{\"json\": \"json\"}",
-     *   "private": true,
-     *   "default_model": "string"
+     *   "private": true
      * }
      */
     Model: {
@@ -400,8 +400,10 @@ export interface components {
        * Format: date-time
        */
       modified?: string;
-      /** Path */
-      path: string;
+      /** Git Name */
+      git_name: string;
+      /** Clone Url */
+      clone_url: string;
       /** Owner Id */
       owner_id: string;
       /**
@@ -415,8 +417,6 @@ export interface components {
        * @default false
        */
       private?: boolean;
-      /** Default Model */
-      default_model: string;
     };
     /**
      * ModelResponse
@@ -429,8 +429,10 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Path */
-      path: string;
+      /** Git Name */
+      git_name: string;
+      /** Clone Url */
+      clone_url: string;
       /** Private */
       private: boolean;
       /** Owner Id */
@@ -527,6 +529,10 @@ export interface components {
       use_train_result_id?: string;
       /** Name */
       name: string;
+      /** Model Branch */
+      model_branch?: string;
+      /** Dataset Branch */
+      dataset_branch?: string;
     };
     /**
      * TrainModelIn
@@ -552,6 +558,10 @@ export interface components {
       parameters?: Record<string, never>;
       /** Name */
       name: string;
+      /** Model Branch */
+      model_branch?: string;
+      /** Dataset Branch */
+      dataset_branch?: string;
     };
     /** UpdateKeyRequest */
     UpdateKeyRequest: {
@@ -694,6 +704,31 @@ export interface operations {
     };
   };
   /**
+   * Delete a model
+   * @description Delete a model.
+   */
+  delete_model_api_models__model_id__delete: {
+    parameters: {
+      path: {
+        model_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Get all jobs
    * @description Get all jobs.
    */
@@ -798,22 +833,11 @@ export interface operations {
    * @description Get all datasets.
    */
   fetch_datasets_api_datasets_get: {
-    parameters: {
-      query?: {
-        user_id?: string;
-      };
-    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "application/json": components["schemas"]["Dataset"][];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -858,6 +882,31 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["DatasetResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Delete a dataset
+   * @description Delete a dataset.
+   */
+  delete_dataset_api_datasets__dataset_id__delete: {
+    parameters: {
+      path: {
+        dataset_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
         };
       };
       /** @description Validation Error */
@@ -1049,11 +1098,6 @@ export interface operations {
    * @description Generate a new key pair for a user.
    */
   gen_key_pair_api_iam_ssh_key_post: {
-    parameters: {
-      query: {
-        user_id: string;
-      };
-    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["UpdateKeyRequest"];

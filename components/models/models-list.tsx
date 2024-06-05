@@ -16,19 +16,23 @@ export const ModelsList = ({ filter }: { filter: string }) => {
 				return;
 			}
 			const fetchModels = async () => {
-				client
-					.GET("/api/models", await dataWithAccessToken(user))
-					.then(({ response }) => response.json())
-					.then((data) => {
-						setModels(data);
-					});
+				const { response, error } = await client.GET(
+					"/api/models",
+					dataWithAccessToken({ user })
+				);
+				if (!response.ok) {
+					console.error("Failed to fetch models", error);
+					setModels([]);
+					return;
+				}
+				setModels(await response.json());
 			};
 			fetchModels();
 		} catch (error) {
 			console.error("Failed to fetch models", error);
 			setModels([]);
 		}
-	}, [user]);
+	}, [user, router]);
 
 	useEffect(() => {
 		if (filter === "") return;

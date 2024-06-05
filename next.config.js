@@ -8,6 +8,9 @@ const nextConfig = {
 	},
 	env: {
 		JWT_SECRET: process.env.JWT_SECRET,
+		JWT_AUDIENCE: process.env.JWT_AUDIENCE,
+		JWT_ISSUER: process.env.JWT_ISSUER,
+		GITLAB_SERVER: process.env.GITLAB_SERVER,
 	},
 };
 

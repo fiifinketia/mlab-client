@@ -10,22 +10,30 @@ import {
 	ModalFooter,
 	ModalHeader,
 } from "@nextui-org/react";
+import Link from "next/link";
+
+import { Dataset, client, dataWithAccessToken, sourceCodeUrl } from "../../lib";
 
 export const DatasetsList = () => {
-	const [datasets, setDatasets] = useState<any[]>([]);
+	const [datasets, setDatasets] = useState<Dataset[]>([]);
 	const { user } = useUser();
+	const router = useRouter();
 	const [openDatasetContext, setOpenDatasetContext] = useState(false);
 	const [deleteDatasetModal, setDeleteDatasetModal] = useState(false);
+	const [dataset, setDataset] = useState<Dataset | null>(null);
 
-	const handleDeleteDataset = (id: string) => {
-		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets/${id}`, {
-			method: "DELETE",
-		})
-			.then((res) => res.json())
-			.then((data) => {
-				setDatasets(datasets.filter((dataset) => dataset.id !== id));
-				setDeleteDatasetModal(false);
-			});
+	const handleDeleteDataset = async (pid?: string) => {
+		if (!pid) return;
+		if (!user) return;
+		const { response } = await client.DELETE(
+			`/api/datasets/{dataset_id}`,
+			dataWithAccessToken({ user, params: { path: { dataset_id: pid } } })
+		);
+		if (response.ok) {
+			setDeleteDatasetModal(false);
+			setDataset(null);
+			router.reload();
+		}
 	};
 
 	const openDeleteDatasetModal = () => {
@@ -34,29 +42,42 @@ export const DatasetsList = () => {
 	};
 
 	const contextOpen = (id: string) => {
+		const dataset = datasets.find((dataset) => dataset.id === id);
+		if (!dataset) return;
+		setDataset(dataset);
 		setOpenDatasetContext(true);
 	};
 
 	useEffect(() => {
-		fetch(
-			`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets?user_id=${user?.email}`
-		)
-			.then((res) => res.json())
-			.then((data) => setDatasets(data));
+		const fetchDatasets = async () => {
+			if (!user) return;
+			const { response, error } = await client.GET(
+				"/api/datasets",
+				dataWithAccessToken({ user })
+			);
+			if (!response.ok) {
+				console.error("Failed to fetch models", error);
+				setDatasets([]);
+				return;
+			}
+			setDatasets(await response.json());
+		};
+		fetchDatasets();
 	}, [user]);
 	return (
 		<div>
 			<br />
 			<div className="flex flex-row justify-start flex-wrap gap-4">
 				{datasets.map((dataset) => {
+					if (!dataset) return null;
 					return (
 						<DatasetCard
-							id={dataset.id}
+							id={dataset.id || ""}
 							key={dataset.id}
 							owner={dataset.owner_id}
 							name={dataset.name}
-							lastUpdated={dataset.modified}
-							isPrivate={dataset.private}
+							lastUpdated={dataset.modified || ""}
+							isPrivate={dataset.private || false}
 							contextOpen={contextOpen}
 						/>
 					);
@@ -69,28 +90,27 @@ export const DatasetsList = () => {
 				<ModalHeader>Dataset Context</ModalHeader>
 				<ModalContent>
 					<ModalBody>
-						<p>Dataset Context</p>
-						<p>Actions</p>
-						<span className="text-warning-500">
-							Not available at the moment
-						</span>
+						<p className="text-primary">Dataset Actions</p>
+						<span className="text-body">{dataset?.description}</span>
 						<div className="flex flex-row justify-end gap-4">
-							<Button
-								className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-								isDisabled
-							>
-								View
+							<Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+								<Link
+									href={sourceCodeUrl(dataset?.git_name)}
+									passHref
+									target="_blank"
+								>
+									View Source
+								</Link>
 							</Button>
-							<Button
+							{/* <Button
 								className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 								isDisabled
 							>
 								Edit
-							</Button>
+							</Button> */}
 							<Button
 								className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
 								onClick={openDeleteDatasetModal}
-								isDisabled
 							>
 								Delete
 							</Button>
@@ -110,7 +130,7 @@ export const DatasetsList = () => {
 					<ModalFooter>
 						<Button
 							className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-							onClick={() => handleDeleteDataset("1")}
+							onClick={() => handleDeleteDataset(dataset?.id)}
 						>
 							Yes
 						</Button>

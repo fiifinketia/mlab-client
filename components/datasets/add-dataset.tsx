@@ -15,50 +15,60 @@ import {
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import axios from "axios";
-
-function makeGitPath(name: string) {
-	return name.toLowerCase().replaceAll(" ", "-") + ".git";
-}
+import {
+	client,
+	dataWithAccessToken,
+	CreateDatasetForm,
+	Dataset,
+	makeCloneUrl,
+} from "../../lib";
 
 export const AddDataset = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const { user } = useUser();
-	const [datasetName, setDatasetName] = useState("");
-	const [datasetDescription, setDatasetDescription] = useState("");
-	const [projectName, setProjectName] = useState("");
-	const [isPrivate, setIsPrivate] = useState(false);
+	const [datasetForm, setDatasetForm] = useState<CreateDatasetForm>({
+		name: "",
+		description: "",
+		private: false,
+		owner_id: user?.nickname || "",
+	});
 	const [isCompleted, setIsCompleted] = useState(false);
-	const [progress, setProgress] = useState(0);
-	const ref = React.useRef<HTMLInputElement>(null);
+	const [dataset, setDataset] = useState<Dataset>();
 
-	const SUBMIT_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets`;
-	const handleFileUpload = () =>
-		new Promise(async (resolve) => {
-			onOpenChange();
-			setIsCompleted(false);
-			try {
-				const response = await axios.post(SUBMIT_url, {
-					name: datasetName,
-					description: datasetDescription,
-					owner_id: user?.email,
-					private: isPrivate,
-				});
-				resolve(response);
-				setIsCompleted(true);
-			} catch (err: any) {
-				// If error is 409, then the model already exists
-				if (err.status === 409) {
-					alert("Dataset already exists. Please choose a different name.");
-				} else if (err.status === 422) {
-					alert("Please fill out all required fields.");
-				} else if (err.status === 404) {
-					alert(err.detail);
-				} else {
-					alert("Internal server error, contact admin");
-				}
+	const handleSubmit = async () => {
+		onOpenChange();
+		try {
+			if (!datasetForm) {
+				throw new Error("Dataset form is not set");
 			}
-		});
-
+			if (!user) {
+				throw new Error("User is not set");
+			}
+			const { response } = await client.POST(
+				"/api/datasets",
+				dataWithAccessToken({
+					body: datasetForm,
+					user,
+				})
+			);
+			if (response.status === 200) {
+				const data: Dataset = await response.json();
+				setIsCompleted(true);
+				setDataset(data);
+			}
+		} catch (err: any) {
+			// If error is 409, then the model already exists
+			if (err.status === 409) {
+				alert("Dataset already exists. Please choose a different name.");
+			} else if (err.status === 422) {
+				alert("Please fill out all required fields.");
+			} else if (err.status === 404) {
+				alert(err.detail);
+			} else {
+				alert("Internal server error, contact admin");
+			}
+		}
+	};
 	return (
 		<div>
 			<>
@@ -80,7 +90,7 @@ export const AddDataset = () => {
 									<input
 										type="hidden"
 										name="owner_id"
-										value={user?.email || ""}
+										value={user?.nickname || ""}
 									/>
 									<Input
 										label="Unique Name"
@@ -88,8 +98,10 @@ export const AddDataset = () => {
 										isRequired
 										variant="bordered"
 										placeholder="Unique Name without spaces"
-										value={datasetName}
-										onChange={(e) => setDatasetName(e.target.value)}
+										value={datasetForm?.name}
+										onChange={(e) =>
+											setDatasetForm({ ...datasetForm, name: e.target.value })
+										}
 									/>
 									<Textarea
 										label="Description"
@@ -97,34 +109,32 @@ export const AddDataset = () => {
 										name="description"
 										variant="bordered"
 										maxLength={200}
-										value={datasetDescription}
-										onChange={(e) => setDatasetDescription(e.target.value)}
+										value={datasetForm?.description}
+										onChange={(e) =>
+											setDatasetForm({
+												...datasetForm,
+												description: e.target.value,
+											})
+										}
 									/>
-									{/* <Input
-										variant="bordered"
-										placeholder="Upload dataset here"
-										isRequired
-										name="file"
-										type="file"
-										ref={ref}
-									/> */}
 									<Switch
 										name="private"
-										value={String(isPrivate)}
-										onChange={() => setIsPrivate(!isPrivate)}
+										value={String(datasetForm?.private)}
+										onChange={() =>
+											setDatasetForm({
+												...datasetForm,
+												private: !datasetForm?.private,
+											})
+										}
 									>
-										{isPrivate ? "Private" : "Public"}
+										{datasetForm?.private ? "Private" : "Public"}
 									</Switch>
 								</ModalBody>
 								<ModalFooter>
 									<Button color="danger" variant="flat" onClick={onClose}>
 										Close
 									</Button>
-									<Button
-										color="primary"
-										type="button"
-										onClick={handleFileUpload}
-									>
+									<Button color="primary" type="button" onClick={handleSubmit}>
 										Add Dataset
 									</Button>
 								</ModalFooter>
@@ -151,9 +161,7 @@ export const AddDataset = () => {
 											</p>
 											<Code className="text-wrap">git init</Code>
 											<Code className="text-wrap">
-												git clone -o mlab
-												ssh://disal@appatechlab.com:6000/~/disal/mlab/filez/datasets/
-												{makeGitPath(datasetName)}
+												git clone {makeCloneUrl(dataset?.git_name)}
 											</Code>
 											<Code className="text-wrap">git add .</Code>
 											<Code className="text-wrap">
@@ -178,7 +186,6 @@ export const AddDataset = () => {
 						</ModalContent>
 					</Modal>
 				)}
-				<iframe name="submit_file" style={{ display: "none" }}></iframe>
 			</>
 		</div>
 	);
