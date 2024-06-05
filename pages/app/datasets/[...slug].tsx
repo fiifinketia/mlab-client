@@ -1,12 +1,11 @@
 import React from 'react';
-import { useRouter } from 'next/router';
-import { DataSetInfo } from '../../../components/datasets/dataset-info';
+import { useRouter } from "next/router";
 
 const Dataset = () => {
    const router = useRouter();
    const [owner, datasetName] = router.query.slug as string[];
    // return <DataSetInfo owner={router.query.slug[0]} datasetName={router.query.slug[1]}/>;
-   return <DataSetInfo owner={owner} datasetName={datasetName}/>;
+   return <></>;
 }
 
 Dataset.getInitialProps = async (ctx: any) => {
