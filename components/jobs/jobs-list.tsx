@@ -183,6 +183,7 @@ export const JobsList = ({
 		name: string;
 	}) => {
 		if (user === undefined) router.push("/api/auth/login");
+		console.log("🚀 ~ user:", user);
 		if (data.job_id === undefined || data.dataset_id === undefined) return;
 
 		const body = {
@@ -193,11 +194,12 @@ export const JobsList = ({
 			name: data.name,
 		};
 		if (!user) return;
-		client.GET("/api/jobs", dataWithAccessToken({ user, body }));
-		onTrainOpenChange();
-		setTimeout(() => {
-			window.location.reload();
-		}, 5000); // 5 seconds
+		client.POST("/api/jobs", dataWithAccessToken({ user, body })).then(() => {
+			onTrainOpenChange();
+			setTimeout(() => {
+				window.location.reload();
+			}, 5000); // 5 seconds
+		});
 	};
 
 	const runTest = (data: {
@@ -463,7 +465,11 @@ const TestModelModal = ({
 
 	useEffect(() => {
 		if (job.results === undefined) return;
-		setResults(job.results.filter((result) => result.type === "train" && result.status === "done"));
+		setResults(
+			job.results.filter(
+				(result) => result.type === "train" && result.status === "done"
+			)
+		);
 	}, [job]);
 
 	const handleSubmit = () => {
@@ -539,7 +545,9 @@ const TestModelModal = ({
 									className="max-w-xs"
 									selectedKeys={customPreTrainedModel}
 									onSelectionChange={setCustomPreTrainedModel}
-									isDisabled={!useDefaultPretrainedModel || results.length === 0}
+									isDisabled={
+										!useDefaultPretrainedModel || results.length === 0
+									}
 								>
 									{results.length === 0 ? (
 										<SelectItem value={""} key={"0"} isReadOnly>
