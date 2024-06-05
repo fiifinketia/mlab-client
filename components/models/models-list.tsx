@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { ModelCard } from "./model-card";
+import { client, dataWithAccessToken } from "../../lib/api";
 
 export const ModelsList = ({ filter }: { filter: string }) => {
 	const router = useRouter();
@@ -10,11 +11,19 @@ export const ModelsList = ({ filter }: { filter: string }) => {
 
 	useEffect(() => {
 		try {
-			fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models?user_id=${user?.email}`
-			)
-				.then((res) => res.json())
-				.then((data) => setModels(data));
+			if (user === undefined) {
+				router.push("/");
+				return;
+			}
+			const fetchModels = async () => {
+				client
+					.GET("/api/models", await dataWithAccessToken(user))
+					.then(({ response }) => response.json())
+					.then((data) => {
+						setModels(data);
+					});
+			};
+			fetchModels();
 		} catch (error) {
 			console.error("Failed to fetch models", error);
 			setModels([]);
