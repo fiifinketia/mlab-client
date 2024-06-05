@@ -88,12 +88,12 @@ export interface paths {
      */
     delete: operations["delete_dataset_api_datasets__dataset_id__delete"];
   };
-  "/api/results/user/{user_id}": {
+  "/api/results/user": {
     /**
      * Get all results for a user
      * @description Get all results for a user.
      */
-    get: operations["get_results_api_results_user__user_id__get"];
+    get: operations["get_results_api_results_user_get"];
   };
   "/api/results/{result_id}": {
     /**
@@ -667,7 +667,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["Model"];
         };
       };
       /** @description Validation Error */
@@ -733,22 +733,11 @@ export interface operations {
    * @description Get all jobs.
    */
   get_jobs_api_jobs_get: {
-    parameters: {
-      query: {
-        user_id: string;
-      };
-    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "application/json": components["schemas"]["Job"][];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -921,23 +910,12 @@ export interface operations {
    * Get all results for a user
    * @description Get all results for a user.
    */
-  get_results_api_results_user__user_id__get: {
-    parameters: {
-      path: {
-        user_id: string;
-      };
-    };
+  get_results_api_results_user_get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "application/json": Record<string, never>[];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -1073,22 +1051,11 @@ export interface operations {
    * @description Get the key pair for a user.
    */
   get_key_pair_api_iam_ssh_key_get: {
-    parameters: {
-      query: {
-        user_id: string;
-      };
-    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "application/json": components["schemas"]["UserKeyPair"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

@@ -29,6 +29,7 @@ import { useRouter } from "next/router";
 import { getSession } from "@auth0/nextjs-auth0";
 import { on } from "events";
 import { set } from "@auth0/nextjs-auth0/dist/session";
+import { client, dataWithAccessToken } from "../../lib";
 
 // Jobs List
 const columns = [
@@ -191,13 +192,8 @@ export const JobsList = ({
 			parameters: data.parameters,
 			name: data.name,
 		};
-		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/train`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-		});
+		if (!user) return;
+		client.GET("/api/jobs", dataWithAccessToken({ user, body }));
 		onTrainOpenChange();
 		setTimeout(() => {
 			window.location.reload();
@@ -220,13 +216,8 @@ export const JobsList = ({
 			parameters: data.parameters,
 			name: data.name,
 		};
-		fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs/test`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-		});
+		if (!user) return;
+		client.POST("/api/jobs/test", dataWithAccessToken({ user, body }));
 		onTestOpenChange();
 		setTimeout(() => {
 			window.location.reload();

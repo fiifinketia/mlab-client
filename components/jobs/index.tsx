@@ -13,24 +13,27 @@ import { AddJob } from "./add-job";
 import { JobsList } from "./jobs-list";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
+import { client, dataWithAccessToken } from "../../lib";
 
 export const Jobs = () => {
 	// Set up search bar
 	const [search, setSearch] = React.useState("");
 	const [jobs, setJobs] = React.useState<any[]>([]);
 	const [datasets, setDatasets] = React.useState<any[]>([]);
-	const {user} = useUser()
+	const { user } = useUser();
 	const router = useRouter();
 
 	useEffect(() => {
 		// if (user === undefined) {
 		// 	router.push("/api/auth/login");
 		// }
-		
+
 		const user_email = localStorage.getItem("user_email");
+		if (!user) return;
 		const fetchJobs = async () => {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs?user_id=${user_email}`
+			const { response: res } = await client.GET(
+				"/api/jobs",
+				dataWithAccessToken({ user })
 			);
 			const data = await res.json();
 			setJobs(data);
@@ -38,8 +41,9 @@ export const Jobs = () => {
 		fetchJobs();
 
 		const fetchDatasets = async () => {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/datasets?user_id=${user_email}`
+			const { response: res } = await client.GET(
+				"/api/datasets",
+				dataWithAccessToken({ user })
 			);
 			const data = await res.json();
 			setDatasets(data);
@@ -47,9 +51,6 @@ export const Jobs = () => {
 		fetchDatasets();
 	}, [user]);
 
-
-
-	
 	return (
 		<div className="my-14 mx-6 max-w-[95rem] mx-auto w-full flex flex-col gap-4">
 			<ul className="flex">

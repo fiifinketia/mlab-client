@@ -15,6 +15,7 @@ import { Select, SelectItem } from "@nextui-org/select";
 import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { client, dataWithAccessToken } from "../../lib";
 
 export const AddJob = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -65,8 +66,10 @@ export const AddJob = () => {
 
 	useEffect(() => {
 		const fetchModels = async () => {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/models`
+			if (!user) return;
+			const { response: res } = await client.GET(
+				"/api/models",
+				dataWithAccessToken({ user })
 			);
 			const data = await res.json();
 			setModels(data);
@@ -122,31 +125,52 @@ export const AddJob = () => {
 										maxLength={500}
 										onChange={(e) => setDescription(e.target.value)}
 									/>
-									<Switch color={selectedModel.size === 0 ? 'default' : 'primary'} isDisabled={selectedModel.size === 0} isSelected={useDefaultParams} onChange={() => {setUseDefaultParams(!useDefaultParams); setDefaultParams(models.filter((model: any) => model.id === Array.from(selectedModel)[0])[0].parameters)}}>
+									<Switch
+										color={selectedModel.size === 0 ? "default" : "primary"}
+										isDisabled={selectedModel.size === 0}
+										isSelected={useDefaultParams}
+										onChange={() => {
+											setUseDefaultParams(!useDefaultParams);
+											setDefaultParams(
+												models.filter(
+													(model: any) =>
+														model.id === Array.from(selectedModel)[0]
+												)[0].parameters
+											);
+										}}
+									>
 										Use default parameters
 									</Switch>
 									{/* Default parameters */}
-									{
-										selectedModel.size !== 0 && !useDefaultParams && (
-											<div className="flex flex-wrap md:inline-grid md:grid-cols-4 gap-2">
-												{
-													// Default parameters is an object of [string, Any]
-													Object.entries(defaultParams).map((param: any) => (														<div>
-															<Input
-																key={param[0]}
-																label={param[0]}
-																variant="bordered"
-																required
-																value={param[1]}
-																type={typeof param[1] === "number" ? "number" : "text"}
-																onChange={(e) => setParameters(param[0], e.target.type === "number" ? Number(e.target.value) : e.target.value)}
-															/>
-														</div>
-													))
-												}
-											</div>
-										)
-									}
+									{selectedModel.size !== 0 && !useDefaultParams && (
+										<div className="flex flex-wrap md:inline-grid md:grid-cols-4 gap-2">
+											{
+												// Default parameters is an object of [string, Any]
+												Object.entries(defaultParams).map((param: any) => (
+													<div>
+														<Input
+															key={param[0]}
+															label={param[0]}
+															variant="bordered"
+															required
+															value={param[1]}
+															type={
+																typeof param[1] === "number" ? "number" : "text"
+															}
+															onChange={(e) =>
+																setParameters(
+																	param[0],
+																	e.target.type === "number"
+																		? Number(e.target.value)
+																		: e.target.value
+																)
+															}
+														/>
+													</div>
+												))
+											}
+										</div>
+									)}
 									{/* TODO: Add validation */}
 								</ModalBody>
 								<ModalFooter>

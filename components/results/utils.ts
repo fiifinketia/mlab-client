@@ -1,10 +1,15 @@
 import { ChipProps } from "@nextui-org/react";
+import { client, dataWithAccessToken } from "../../lib";
+import { UserProfile } from "@auth0/nextjs-auth0/client";
 
-export const downloadFiles = (result_id: string) => {
-	fetch(
-		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/download/${result_id}`
-	)
-		.then((response) => response.blob())
+export const downloadFiles = (result_id: string, user?: UserProfile) => {
+	if (!user) return;
+	client
+		.GET(
+			"/api/results/download/{result_id}",
+			dataWithAccessToken({ user, params: { path: { result_id } } })
+		)
+		.then(({ response }) => response.blob())
 		.then((blob) => {
 			const url = window.URL.createObjectURL(new Blob([blob]));
 			const link = document.createElement("a");
@@ -16,11 +21,18 @@ export const downloadFiles = (result_id: string) => {
 		});
 };
 
-export const downloadFile = (result_id: string, file_name: string) => {
-	fetch(
-		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/download/${result_id}/${file_name}`
-	)
-		.then((response) => response.blob())
+export const downloadFile = (
+	result_id: string,
+	file_name: string,
+	user?: UserProfile
+) => {
+	if (!user) return;
+	client
+		.GET(
+			"/api/results/download/{result_id}/{file_name}",
+			dataWithAccessToken({ user, params: { path: { result_id, file_name } } })
+		)
+		.then(({ response }) => response.blob())
 		.then((blob) => {
 			const url = window.URL.createObjectURL(new Blob([blob]));
 			const link = document.createElement("a");
@@ -42,11 +54,10 @@ export function capitalize(str: string) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export const getResults = async () => {
-	const response = await fetch(
-		`${
-			process.env.NEXT_PUBLIC_API_BASE_URL
-		}/api/results/user/${localStorage.getItem("user_email")}`
+export const getResults = async (user: UserProfile) => {
+	const { response } = await client.GET(
+		"/api/results/user",
+		dataWithAccessToken({ user })
 	);
 	const data = await response.json();
 	return data;

@@ -13,6 +13,8 @@ import {
 } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 import { downloadFiles, downloadFile, statusColorMap } from "./utils";
+import { client, dataWithAccessToken } from "../../lib";
+import { UserProfile, useUser } from "@auth0/nextjs-auth0/client";
 
 const FILES_COLUMNS = [
 	{ name: "NAME", uid: "name" },
@@ -35,10 +37,12 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [currentDuration, setCurrentDuration] = useState<string>("");
 	const [error, setError] = useState<boolean>(false);
+	const { user } = useUser();
 
 	useEffect(() => {
 		const getResult = async () => {
-			const result = await getResultById(resultId);
+			if (!user) return;
+			const result = await getResultById(resultId, user);
 			if (result === undefined || result.length === 0) {
 				setLoading(false);
 				setError(true);
@@ -88,7 +92,7 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 							<Button
 								color="primary"
 								size="lg"
-								onClick={() => downloadFiles(result.id)}
+								onClick={() => downloadFiles(result.id, user)}
 								className="flex flex-row items-center align-middle gap-1 w-full"
 							>
 								Download results{" "}
@@ -226,7 +230,7 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 																<TableCell>
 																	<Button
 																		onClick={() =>
-																			downloadFile(result.id, file.name)
+																			downloadFile(result.id, file.name, user)
 																		}
 																		color="primary"
 																	>
@@ -334,9 +338,10 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 	);
 };
 
-const getResultById = async (resultId: string) => {
-	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/results/${resultId}`
+const getResultById = async (resultId: string, user: UserProfile) => {
+	const { response } = await client.GET(
+		"/api/results/{result_id}",
+		dataWithAccessToken({ user, params: { path: { result_id: resultId } } })
 	);
 	const result = await response.json();
 	return result;
