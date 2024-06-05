@@ -3,6 +3,7 @@ import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { NextPage } from "next";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import React from "react";
+import { client, dataWithAccessToken } from "../../../../lib";
 
 const Configurations: NextPage = () => {
 	const { user } = useUser();
@@ -14,14 +15,9 @@ const Configurations: NextPage = () => {
 		// Fetch the key pair from the server
 		const fetchKeyPair = async () => {
 			try {
-				const res = await fetch(
-					`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/iam/ssh_key?user_id=${user.email}`,
-					{
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json",
-						},
-					}
+				const { response: res } = await client.GET(
+					"/api/iam/ssh_key",
+					dataWithAccessToken({ user })
 				);
 				if (res.status !== 200) {
 					throw {
@@ -48,17 +44,9 @@ const Configurations: NextPage = () => {
 	const submitPubKey = async () => {
 		if (user === undefined) return;
 		try {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/iam/ssh_key?user_id=${user.email}`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						public_key: pubKey,
-					}),
-				}
+			const { response: res } = await client.POST(
+				"/api/iam/ssh_key",
+				dataWithAccessToken({ user, body: { public_key: pubKey } })
 			);
 			if (res.status !== 200) {
 				throw {
@@ -69,7 +57,6 @@ const Configurations: NextPage = () => {
 			}
 
 			const data = await res.json();
-			console.log(data);
 			setPubKey(data.public_key);
 		} catch (error: any) {
 			alert("Internal server error, contact admin");
