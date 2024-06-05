@@ -30,6 +30,7 @@ import {
 	statusColorMap,
 } from "./utils";
 import { useRouter } from "next/router";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const INITIAL_VISIBLE_COLUMNS = [
 	"type",
@@ -54,9 +55,14 @@ type Results = {
 export function ResultsList() {
 	const [results, setResults] = React.useState<Results[]>([]);
 	const router = useRouter();
+	const { user } = useUser();
 	React.useEffect(() => {
 		const fetchResults = async () => {
-			const results = await getResults();
+			if (user === undefined) {
+				router.push("/");
+				return;
+			}
+			const results = await getResults(user);
 			setResults(results);
 			setPages(Math.ceil(results.length / rowsPerPage));
 		};
@@ -140,7 +146,6 @@ export function ResultsList() {
 		return filteredResults;
 	}, [results, filterValue, statusFilter, typeFilter]);
 
-
 	const items = React.useMemo(() => {
 		const start = (page - 1) * rowsPerPage;
 		const end = start + rowsPerPage;
@@ -179,7 +184,7 @@ export function ResultsList() {
 			columnKey: React.Key,
 			downloadFiles: Function,
 			openResults: Function
-		) => {			
+		) => {
 			switch (columnKey) {
 				case "type":
 					return <span>{result.type}</span>;
