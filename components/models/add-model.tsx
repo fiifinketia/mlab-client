@@ -133,14 +133,6 @@ export const AddModel = () => {
 							}
 							required
 						/>
-						<Input
-							label="Default Model"
-							placeholder="Relative Path to default model in repo"
-							onChange={(e) =>
-								setModelForm({ ...modelForm, default_model: e.target.value })
-							}
-							required
-						/>
 
 						<Switch
 							isSelected={modelForm.private}
