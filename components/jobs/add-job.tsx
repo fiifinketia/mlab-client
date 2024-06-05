@@ -12,7 +12,6 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import { Select, SelectItem } from "@nextui-org/select";
-import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { client, dataWithAccessToken } from "../../lib";
@@ -28,25 +27,18 @@ export const AddJob = () => {
 			return;
 		}
 		try {
-			await axios.post(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/jobs`,
-				{
-					name: name,
-					description: description,
-					model_id: Array.from(selectedModel)[0],
-					owner_id: user?.email,
-					parameters: useDefaultParams
-						? models.filter(
-								(model: any) => model.id === Array.from(selectedModel)[0]
-						  )[0].parameters
-						: defaultParams,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
+			const body = {
+				name: name,
+				description: description,
+				model_id: Array.from(selectedModel)[0],
+				owner_id: user?.email,
+				parameters: useDefaultParams
+					? models.filter(
+							(model: any) => model.id === Array.from(selectedModel)[0]
+					  )[0].parameters
+					: defaultParams,
+			};
+			client.POST("/api/jobs", dataWithAccessToken({ user, body }));
 		} catch (error) {
 			console.log(error);
 			alert("Error adding job. Please try again.");

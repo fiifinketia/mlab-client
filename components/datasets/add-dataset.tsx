@@ -14,7 +14,6 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import React, { useState } from "react";
-import axios from "axios";
 import {
 	client,
 	dataWithAccessToken,
