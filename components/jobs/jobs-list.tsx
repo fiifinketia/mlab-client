@@ -194,12 +194,14 @@ export const JobsList = ({
 			name: data.name,
 		};
 		if (!user) return;
-		client.POST("/api/jobs", dataWithAccessToken({ user, body })).then(() => {
-			onTrainOpenChange();
-			setTimeout(() => {
-				window.location.reload();
-			}, 5000); // 5 seconds
-		});
+		client
+			.POST("/api/jobs/train", dataWithAccessToken({ user, body }))
+			.then(() => {
+				onTrainOpenChange();
+				setTimeout(() => {
+					window.location.reload();
+				}, 5000); // 5 seconds
+			});
 	};
 
 	const runTest = (data: {
