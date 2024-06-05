@@ -66,7 +66,10 @@ export const AddJob = () => {
 
 	useEffect(() => {
 		const fetchModels = async () => {
-			if (!user) return;
+			if (!user) {
+				router.push("/");
+				return;
+			}
 			const { response: res } = await client.GET(
 				"/api/models",
 				dataWithAccessToken({ user })
