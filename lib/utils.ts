@@ -17,12 +17,13 @@ export const sourceCodeUrl = (repo_name?: string) => {
 };
 
 export const generateAccessToken = (user: UserProfile) => {
-	const leeway = 60;
-	return jwt.sign(
+	const iat = Math.floor(Date.now() / 1000);
+	const token = jwt.sign(
 		{
 			username: user.nickname,
 			email: user.email,
 			name: user.name,
+			iat,
 		},
 		process.env.JWT_SECRET || "",
 		{
@@ -31,7 +32,7 @@ export const generateAccessToken = (user: UserProfile) => {
 			issuer: process.env.JWT_ISSUER || "",
 			audience: process.env.JWT_AUDIENCE || "",
 			subject: user.email || "",
-			iat: Math.floor(Date.now() / 1000) - leeway,
 		}
 	);
+	return token;
 };
