@@ -17,6 +17,7 @@ export const sourceCodeUrl = (repo_name?: string) => {
 };
 
 export const generateAccessToken = (user: UserProfile) => {
+	const leeway = 60;
 	return jwt.sign(
 		{
 			username: user.nickname,
@@ -26,10 +27,11 @@ export const generateAccessToken = (user: UserProfile) => {
 		process.env.JWT_SECRET || "",
 		{
 			algorithm: "HS256",
-			expiresIn: "2h",
+			expiresIn: "2d",
 			issuer: process.env.JWT_ISSUER || "",
 			audience: process.env.JWT_AUDIENCE || "",
 			subject: user.email || "",
+			iat: Math.floor(Date.now() / 1000) - leeway,
 		}
 	);
 };
