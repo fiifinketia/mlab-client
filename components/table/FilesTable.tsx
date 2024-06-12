@@ -123,7 +123,6 @@ const ViewFileModal = ({
 	resultId: string;
 	user: UserProfile;
 }) => {
-	console.log("🚀 ~ filename:", filename);
 	const [fileContent, setFileContent] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [lastIntervalId, setLastIntervalId] = useState<NodeJS.Timeout | null>(
@@ -140,7 +139,6 @@ const ViewFileModal = ({
 			})
 		);
 		const res = await response.text();
-		console.log("🚀 ~ fetchFileContent ~ fileData:", res, filename);
 		setIsLoading(false);
 		setFileContent(res);
 	};

@@ -166,7 +166,6 @@ export const JobsList = ({ filter, jobs }: { filter: string; jobs: any[] }) => {
 		name: string;
 	}) => {
 		if (user === undefined) router.push("/api/auth/login");
-		console.log("🚀 ~ user:", user);
 		if (data.job_id === undefined) return;
 
 		const body = {
