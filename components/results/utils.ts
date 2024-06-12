@@ -63,6 +63,18 @@ export const getResults = async (user: UserProfile) => {
 	return data;
 };
 
+export const sizeToString = (size: number) => {
+	if (size < 1024) {
+		return `${size} B`;
+	} else if (size < 1024 * 1024) {
+		return `${Math.round(size / 1024)} KB`;
+	} else if (size < 1024 * 1024 * 1024) {
+		return `${Math.round(size / (1024 * 1024))} MB`;
+	} else {
+		return `${Math.round(size / (1024 * 1024 * 1024))} GB`;
+	}
+};
+
 export const columns = [
 	{ name: "TYPE", uid: "type", sortable: false, width: null },
 	{ name: "JOB NAME", uid: "job_name", sortable: false, width: null },

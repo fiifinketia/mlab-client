@@ -12,15 +12,10 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useState, useEffect } from "react";
-import { downloadFiles, downloadFile, statusColorMap } from "./utils";
+import { downloadFiles, sizeToString, statusColorMap } from "./utils";
 import { client, dataWithAccessToken } from "../../lib";
 import { UserProfile, useUser } from "@auth0/nextjs-auth0/client";
-
-const FILES_COLUMNS = [
-	{ name: "NAME", uid: "name" },
-	{ name: "SIZE", uid: "size" },
-	{ name: "ACTIONS", uid: "actions" },
-];
+import { FilesTable } from "../table/FilesTable";
 
 const METRICS_COLUMNS = [
 	{ name: "METRIC", uid: "metric" },
@@ -209,40 +204,7 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 										</div>
 									</Tab>
 									<Tab title="Files" key="3">
-										<div className="flex flex-col gap-4">
-											<Table>
-												<TableHeader>
-													{FILES_COLUMNS.map((column) => (
-														<TableColumn key={column.uid}>
-															{column.name}
-														</TableColumn>
-													))}
-												</TableHeader>
-												<TableBody>
-													{result.files.map(
-														(
-															file: { name: string; size: number },
-															index: number
-														) => (
-															<TableRow key={index}>
-																<TableCell>{file.name}</TableCell>
-																<TableCell>{sizeToString(file.size)}</TableCell>
-																<TableCell>
-																	<Button
-																		onClick={() =>
-																			downloadFile(result.id, file.name, user)
-																		}
-																		color="primary"
-																	>
-																		Download
-																	</Button>
-																</TableCell>
-															</TableRow>
-														)
-													)}
-												</TableBody>
-											</Table>
-										</div>
+										<FilesTable resultId={resultId} files={result.files} />
 									</Tab>
 								</Tabs>
 							</div>
@@ -345,18 +307,6 @@ const getResultById = async (resultId: string, user: UserProfile) => {
 	);
 	const result = await response.json();
 	return result;
-};
-
-const sizeToString = (size: number) => {
-	if (size < 1024) {
-		return `${size} B`;
-	} else if (size < 1024 * 1024) {
-		return `${Math.round(size / 1024)} KB`;
-	} else if (size < 1024 * 1024 * 1024) {
-		return `${Math.round(size / (1024 * 1024))} MB`;
-	} else {
-		return `${Math.round(size / (1024 * 1024 * 1024))} GB`;
-	}
 };
 
 const getDuration = (start: string, end: string) => {

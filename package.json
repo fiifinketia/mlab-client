@@ -3,11 +3,11 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev",
+		"dev": "next dev -H 0.0.0.0",
 		"build": "next build",
 		"start": "NODE_ENV=production next start -p 8099 -H 0.0.0.0",
 		"lint": "next lint",
-		"generate:sdk": "NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-typescript https://mapi.appatechlab.com:8080/api/openapi.json --output lib/mapi.ts"
+		"generate:sdk": "NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-typescript http://0.0.0.0:8090/api/openapi.json --output lib/mapi.ts"
 	},
 	"dependencies": {
 		"@auth0/nextjs-auth0": "^3.2.0",
@@ -33,7 +33,8 @@
 		"react-router-dom": "^6.23.1",
 		"rehype-raw": "^7.0.0",
 		"remark-gfm": "^4.0.0",
-		"remark-html": "^16.0.1"
+		"remark-html": "^16.0.1",
+		"socket.io-client": "^4.7.5"
 	},
 	"devDependencies": {
 		"@types/node": "18.7.18",

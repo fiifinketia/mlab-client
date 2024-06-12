@@ -50,6 +50,20 @@ export interface paths {
      */
     post: operations["create_job_api_jobs_post"];
   };
+  "/api/jobs/stop": {
+    /**
+     * Stop all job processes
+     * @description Stop a jobs running processes
+     */
+    post: operations["stop_jobs_api_jobs_stop_post"];
+  };
+  "/api/jobs/close": {
+    /**
+     * Close a job
+     * @description Close a job.
+     */
+    post: operations["close_job_api_jobs_close_post"];
+  };
   "/api/jobs/train": {
     /**
      * Run job to train model
@@ -102,19 +116,12 @@ export interface paths {
      */
     get: operations["get_result_api_results__result_id__get"];
   };
-  "/api/results/train": {
+  "/api/results/submit": {
     /**
-     * Submit training results for a job
+     * Submit pm results for a job
      * @description Submit training results for a job.
      */
-    post: operations["submit_train_results_api_results_train_post"];
-  };
-  "/api/results/test": {
-    /**
-     * Submit testing results for a job
-     * @description Submit testing results for a job.
-     */
-    post: operations["submit_test_results_api_results_test_post"];
+    post: operations["submit_pm_results_api_results_submit_post"];
   };
   "/api/results/download/{result_id}": {
     /**
@@ -282,9 +289,12 @@ export interface components {
      *   "name": "string",
      *   "description": "string",
      *   "model_id": "uuid",
+     *   "dataset_id": "uuid",
      *   "model_name": "string",
      *   "owner_id": "string",
      *   "parameters": "{\"json\": \"json\"}",
+     *   "closed": true,
+     *   "ready": true,
      *   "created": "datetime",
      *   "modified": "datetime",
      *   "results": [
@@ -298,7 +308,6 @@ export interface components {
      *       "created": "datetime",
      *       "modified": "datetime",
      *       "metrics": "{\"json\": \"json\"}",
-     *       "files": "{\"json\": \"json\"}",
      *       "parameters": "{\"json\": \"json\"}",
      *       "pretrained_model": "string",
      *       "predictions": "{\"json\": \"json\"}"
@@ -321,6 +330,11 @@ export interface components {
        * Format: uuid
        */
       model_id: string;
+      /**
+       * Dataset Id
+       * Format: uuid
+       */
+      dataset_id: string;
       /** Model Name */
       model_name: string;
       /** Owner Id */
@@ -331,6 +345,16 @@ export interface components {
        * @default {}
        */
       parameters?: string;
+      /**
+       * Closed
+       * @default false
+       */
+      closed?: boolean;
+      /**
+       * Ready
+       * @default false
+       */
+      ready?: boolean;
       /**
        * Created
        * Format: date-time
@@ -360,6 +384,11 @@ export interface components {
       model_id: string;
       /** Parameters */
       parameters?: Record<string, never>;
+      /**
+       * Dataset Id
+       * Format: uuid
+       */
+      dataset_id: string;
     };
     /**
      * Model
@@ -546,11 +575,6 @@ export interface components {
       job_id: string;
       /** User Id */
       user_id: string;
-      /**
-       * Dataset Id
-       * Format: uuid
-       */
-      dataset_id: string;
       /**
        * Parameters
        * @default {}
@@ -768,6 +792,56 @@ export interface operations {
     };
   };
   /**
+   * Stop all job processes
+   * @description Stop a jobs running processes
+   */
+  stop_jobs_api_jobs_stop_post: {
+    parameters: {
+      query: {
+        job_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Close a job
+   * @description Close a job.
+   */
+  close_job_api_jobs_close_post: {
+    parameters: {
+      query: {
+        job_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Run job to train model
    * @description Run job to train model.
    */
@@ -946,35 +1020,10 @@ export interface operations {
     };
   };
   /**
-   * Submit training results for a job
+   * Submit pm results for a job
    * @description Submit training results for a job.
    */
-  submit_train_results_api_results_train_post: {
-    parameters: {
-      query?: {
-        error?: boolean;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /**
-   * Submit testing results for a job
-   * @description Submit testing results for a job.
-   */
-  submit_test_results_api_results_test_post: {
+  submit_pm_results_api_results_submit_post: {
     parameters: {
       query?: {
         error?: boolean;

@@ -1,29 +1,11 @@
-import createClient, { FetchOptions, ParseAs } from "openapi-fetch";
-import jwt from "jsonwebtoken";
+import createClient, { ParseAs } from "openapi-fetch";
 import { UserProfile } from "@auth0/nextjs-auth0/client";
 import { paths } from "./mapi";
+import { generateAccessToken } from "./utils";
 
 export const client = createClient<paths>({
-	baseUrl: "https://mapi.appatechlab.com:8080",
+	baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000",
 });
-
-export const generateAccessToken = (user: UserProfile) => {
-	return jwt.sign(
-		{
-			username: user.nickname,
-			email: user.email,
-			name: user.name,
-		},
-		process.env.JWT_SECRET || "",
-		{
-			algorithm: "HS256",
-			expiresIn: "2h",
-			issuer: process.env.JWT_ISSUER || "",
-			audience: process.env.JWT_AUDIENCE || "",
-			subject: user.email || "",
-		}
-	);
-};
 
 export const dataWithAccessToken = ({
 	user,

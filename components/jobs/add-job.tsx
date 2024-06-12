@@ -14,7 +14,13 @@ import {
 import { Select, SelectItem } from "@nextui-org/select";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { client, dataWithAccessToken } from "../../lib";
+import {
+	CreateJobForm,
+	Dataset,
+	Model,
+	client,
+	dataWithAccessToken,
+} from "../../lib";
 
 export const AddJob = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -27,11 +33,12 @@ export const AddJob = () => {
 			return;
 		}
 		try {
-			const body = {
+			const body: CreateJobForm = {
 				name: name,
 				description: description,
-				model_id: Array.from(selectedModel)[0],
-				owner_id: user?.email,
+				model_id: Array.from(selectedModel)[0] as string,
+				dataset_id: Array.from(selectedDataset)[0] as string,
+				owner_id: user?.nickname as string,
 				parameters: useDefaultParams
 					? models.filter(
 							(model: any) => model.id === Array.from(selectedModel)[0]
@@ -46,8 +53,10 @@ export const AddJob = () => {
 	};
 
 	const [name, setName] = useState("");
-	const [models, setModels] = useState<any[]>([{}]);
+	const [models, setModels] = useState<Model[]>([]);
+	const [datasets, setDatasets] = useState<Dataset[]>([]);
 	const [selectedModel, setSelectedModel] = useState<any>(new Set([]));
+	const [selectedDataset, setSelectedDataset] = useState<any>(new Set([]));
 	const [useDefaultParams, setUseDefaultParams] = useState(true);
 	const [defaultParams, setDefaultParams] = useState<any>({});
 	const [description, setDescription] = useState("");
@@ -69,6 +78,20 @@ export const AddJob = () => {
 			const data = await res.json();
 			setModels(data);
 		};
+
+		const fetchDatasets = async () => {
+			if (!user) {
+				router.push("/");
+				return;
+			}
+			const { response: res } = await client.GET(
+				"/api/datasets",
+				dataWithAccessToken({ user })
+			);
+			const data = await res.json();
+			setDatasets(data);
+		};
+		fetchDatasets();
 		fetchModels();
 	}, []);
 
@@ -99,7 +122,21 @@ export const AddJob = () => {
 										value={name}
 										onChange={(e) => setName(e.target.value)}
 									/>
-									{/* TODO: Add validation */}
+
+									<Select
+										label={
+											selectedDataset.size !== 0 ? null : "Select a Dataset"
+										}
+										className="max-w-full truncate"
+										selectedKeys={selectedDataset}
+										onSelectionChange={setSelectedDataset}
+									>
+										{datasets.map((dataset: any) => (
+											<SelectItem key={dataset.id} value={dataset.id}>
+												{dataset.name}
+											</SelectItem>
+										))}
+									</Select>
 									<Select
 										label={selectedModel.size !== 0 ? null : "Select a Model"}
 										className="max-w-full truncate"

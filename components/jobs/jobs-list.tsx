@@ -22,14 +22,11 @@ import {
 	DropdownMenu,
 	DropdownTrigger,
 } from "@nextui-org/react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Select, SelectItem } from "@nextui-org/select";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
-import { getSession } from "@auth0/nextjs-auth0";
-import { on } from "events";
-import { set } from "@auth0/nextjs-auth0/dist/session";
-import { client, dataWithAccessToken } from "../../lib";
+import { Job, client, dataWithAccessToken } from "../../lib";
 
 // Jobs List
 const columns = [
@@ -42,7 +39,7 @@ const columns = [
 
 const RenderCell = (
 	columnKey: string | React.Key,
-	item: any,
+	item: Job & { results: any[] },
 	openTrainModel: Function,
 	openTestModel: Function
 ) => {
@@ -52,7 +49,6 @@ const RenderCell = (
 					return new Date(b.created).getTime() - new Date(a.created).getTime();
 			  })[0]
 			: undefined;
-	const results = item.results;
 	switch (columnKey) {
 		case "name":
 			return <span>{item.name}</span>;
@@ -63,13 +59,13 @@ const RenderCell = (
 				</Tooltip>
 			);
 		case "results":
-			if (results === undefined || results.length === 0)
-				return <Chip color="primary">Ready</Chip>;
+			if (item.ready && !item.closed) return <Chip color="primary">Ready</Chip>;
 			if (latestResult && latestResult.status === "running")
 				return <Chip color="warning">Running</Chip>;
 			if (latestResult && latestResult.status === "error")
 				return <Chip color="danger">Error</Chip>;
-			else return <Chip color="success">Done</Chip>;
+			if (!item.ready) <Chip color="secondary">Not Ready</Chip>;
+			return <Chip color="secondary">Closed</Chip>;
 		case "actions":
 			return (
 				<div className="flex items-center gap-4 ">
@@ -81,7 +77,7 @@ const RenderCell = (
 							aria-label="Dynamic Actions"
 							disabledKeys={
 								latestResult && latestResult.status === "running"
-									? ["train"]
+									? ["train", "test"]
 									: []
 							}
 						>
@@ -104,33 +100,22 @@ const RenderCell = (
 								className="text-danger"
 								// onClick={() => openRunJobModal(item)}
 							>
-								Delete Job
+								Close Job
 							</DropdownItem>
 						</DropdownMenu>
 					</Dropdown>
 				</div>
 			);
 		case "created":
-			const date = new Date(item.created);
+			const date = new Date(item.created as string);
 			return <span>{date.toLocaleDateString()}</span>;
 		default:
-			return <span>{item[columnKey]}</span>;
+			return <span>{item[columnKey as keyof Job]}</span>;
 	}
 };
 
-export const JobsList = ({
-	filter,
-	jobs,
-	datasets,
-}: {
-	filter: string;
-	jobs: any[];
-	datasets: any[];
-}) => {
+export const JobsList = ({ filter, jobs }: { filter: string; jobs: any[] }) => {
 	const [filteredJobs, setFilteredJobs] = useState<any[]>([]);
-	const [selectedTrainDataset, setSelectedTrainDataset] = useState<any>(
-		new Set([])
-	);
 	const { isOpen: isTrainModelOpen, onOpenChange: onTrainOpenChange } =
 		useDisclosure();
 	const { isOpen: isTestModelOpen, onOpenChange: onTestOpenChange } =
@@ -152,7 +137,6 @@ export const JobsList = ({
 
 	const closeTrainModal = () => {
 		onTrainOpenChange();
-		setSelectedTrainDataset(new Set([]));
 	};
 
 	// set filtered jobs to jobs on first render
@@ -178,18 +162,16 @@ export const JobsList = ({
 
 	const runTrain = (data: {
 		job_id: string;
-		dataset_id: string;
 		parameters?: any;
 		name: string;
 	}) => {
 		if (user === undefined) router.push("/api/auth/login");
 		console.log("🚀 ~ user:", user);
-		if (data.job_id === undefined || data.dataset_id === undefined) return;
+		if (data.job_id === undefined) return;
 
 		const body = {
 			job_id: data.job_id,
 			user_id: user?.email,
-			dataset_id: data.dataset_id,
 			parameters: data.parameters,
 			name: data.name,
 		};
@@ -206,17 +188,15 @@ export const JobsList = ({
 
 	const runTest = (data: {
 		job_id: string;
-		dataset_id: string;
 		parameters?: any;
 		name: string;
 	}) => {
 		if (user === undefined) router.push("/api/auth/login");
-		if (data.job_id === undefined || data.dataset_id === undefined) return;
+		if (data.job_id === undefined) return;
 
 		const body = {
 			job_id: data.job_id,
 			user_id: user?.email,
-			dataset_id: data.dataset_id,
 			parameters: data.parameters,
 			name: data.name,
 		};
@@ -265,7 +245,6 @@ export const JobsList = ({
 				isOpen={isTrainModelOpen}
 				onOpenChange={onTrainOpenChange}
 				job={runTrainJob}
-				datasets={datasets}
 				closeModal={closeTrainModal}
 				runTrain={runTrain}
 			/>
@@ -274,7 +253,6 @@ export const JobsList = ({
 				isOpen={isTestModelOpen}
 				onOpenChange={onTestOpenChange}
 				job={runTestJob}
-				datasets={datasets}
 				closeModal={onTestOpenChange}
 				runTest={runTest}
 			/>
@@ -286,23 +264,15 @@ const TrainModelModal = ({
 	isOpen,
 	onOpenChange,
 	job,
-	datasets,
 	closeModal,
 	runTrain,
 }: {
 	isOpen: boolean;
 	onOpenChange: () => void;
 	job: any;
-	datasets: any[];
 	closeModal: () => void;
-	runTrain: (data: {
-		job_id: string;
-		dataset_id: string;
-		parameters?: any;
-		name: string;
-	}) => void;
+	runTrain: (data: { job_id: string; parameters?: any; name: string }) => void;
 }) => {
-	const [selectedDataset, setSelectedDataset] = useState<any>(new Set([]));
 	const [changeParams, setChangeParams] = useState<boolean>(false);
 	const [defaultParams, setDefaultParams] = useState<any>({});
 	const [name, setName] = useState("");
@@ -314,7 +284,6 @@ const TrainModelModal = ({
 	const handleSubmit = () => {
 		const data = {
 			job_id: job.id as string,
-			dataset_id: Array.from(selectedDataset)[0] as string,
 			parameters: changeParams ? defaultParams : undefined,
 			name: name,
 		};
@@ -323,7 +292,6 @@ const TrainModelModal = ({
 
 	const closeModalAndReset = () => {
 		closeModal();
-		setSelectedDataset(new Set([]));
 		setChangeParams(false);
 		setDefaultParams({});
 	};
@@ -353,18 +321,6 @@ const TrainModelModal = ({
 								required
 								onChange={(e) => setName(e.target.value)}
 							/>
-							<Select
-								label={selectedDataset.size !== 0 ? null : "Select a dataset"}
-								className="max-w-xs"
-								selectedKeys={selectedDataset}
-								onSelectionChange={setSelectedDataset}
-							>
-								{datasets.map((dataset: any) => (
-									<SelectItem key={dataset.id} value={dataset.id}>
-										{dataset.name}
-									</SelectItem>
-								))}
-							</Select>
 							<Switch
 								isSelected={changeParams}
 								onChange={() => {
@@ -427,7 +383,6 @@ const TestModelModal = ({
 	isOpen,
 	onOpenChange,
 	job,
-	datasets,
 	closeModal,
 	runTest,
 }: {
@@ -445,17 +400,14 @@ const TestModelModal = ({
 			type: string;
 		}[];
 	};
-	datasets: any[];
 	closeModal: () => void;
 	runTest: (data: {
 		job_id: string;
-		dataset_id: string;
 		parameters?: any;
 		result_id?: string;
 		name: string;
 	}) => void;
 }) => {
-	const [selectedDataset, setSelectedDataset] = useState<any>(new Set([]));
 	const [useDefaultPretrainedModel, setUseDefaultPretrainedModel] =
 		useState<boolean>(true);
 	const [customPreTrainedModel, setCustomPreTrainedModel] = useState<any>(
@@ -477,7 +429,6 @@ const TestModelModal = ({
 	const handleSubmit = () => {
 		const data = {
 			job_id: job.id as string,
-			dataset_id: Array.from(selectedDataset)[0] as string,
 			parameters: undefined,
 			result_id: useDefaultPretrainedModel
 				? (Array.from(customPreTrainedModel)[0] as string)
@@ -489,7 +440,6 @@ const TestModelModal = ({
 
 	const closeModalAndReset = () => {
 		closeModal();
-		setSelectedDataset(new Set([]));
 	};
 
 	return (
@@ -517,18 +467,6 @@ const TestModelModal = ({
 								required
 								onChange={(e) => setName(e.target.value)}
 							/>
-							<Select
-								label={selectedDataset.size !== 0 ? null : "Select a dataset"}
-								className="max-w-xs"
-								selectedKeys={selectedDataset}
-								onSelectionChange={setSelectedDataset}
-							>
-								{datasets.map((dataset: any) => (
-									<SelectItem key={dataset.id} value={dataset.id}>
-										{dataset.name}
-									</SelectItem>
-								))}
-							</Select>
 							<Switch
 								isSelected={useDefaultPretrainedModel}
 								onChange={() =>

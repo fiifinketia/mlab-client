@@ -19,7 +19,6 @@ export const Jobs = () => {
 	// Set up search bar
 	const [search, setSearch] = React.useState("");
 	const [jobs, setJobs] = React.useState<any[]>([]);
-	const [datasets, setDatasets] = React.useState<any[]>([]);
 	const { user } = useUser();
 	const router = useRouter();
 
@@ -39,16 +38,6 @@ export const Jobs = () => {
 			setJobs(data);
 		};
 		fetchJobs();
-
-		const fetchDatasets = async () => {
-			const { response: res } = await client.GET(
-				"/api/datasets",
-				dataWithAccessToken({ user })
-			);
-			const data = await res.json();
-			setDatasets(data);
-		};
-		fetchDatasets();
 	}, [user]);
 
 	return (
@@ -92,7 +81,7 @@ export const Jobs = () => {
 				</div>
 			</div>
 
-			<JobsList filter={search} jobs={jobs} datasets={datasets} />
+			<JobsList filter={search} jobs={jobs} />
 		</div>
 	);
 };
