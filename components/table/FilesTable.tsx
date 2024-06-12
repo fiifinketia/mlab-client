@@ -30,11 +30,9 @@ const FILES_COLUMNS = [
 export const FilesTable = ({
 	files,
 	resultId,
-	status,
 }: {
 	files: ResultResponseFiles;
 	resultId: string;
-	status: string;
 }) => {
 	const { user } = useUser();
 	const [selected, setSelectedKey] = useState<Selection>(
