@@ -21,12 +21,17 @@ import {
 	DropdownItem,
 	DropdownMenu,
 	DropdownTrigger,
+	ButtonGroup,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { Select, SelectItem } from "@nextui-org/select";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
 import { Job, client, dataWithAccessToken } from "../../lib";
+import { TestIcon } from "../icons/test-icon";
+import { PlayIcon } from "../icons/play-icon";
+import { StopIcon } from "../icons/stop-icon";
+import { DeleteIcon } from "../icons/delete-icon";
 
 // Jobs List
 const columns = [
@@ -40,8 +45,10 @@ const columns = [
 const RenderCell = (
 	columnKey: string | React.Key,
 	item: Job & { results: any[] },
-	openTrainModel: Function,
-	openTestModel: Function
+	openTrainModal: Function,
+	openTestModal: Function,
+	openStopModal: Function,
+	openDeleteModal: Function
 ) => {
 	const latestResult =
 		item.results !== undefined
@@ -68,43 +75,36 @@ const RenderCell = (
 			return <Chip color="secondary">Closed</Chip>;
 		case "actions":
 			return (
-				<div className="flex items-center gap-4 ">
-					<Dropdown>
-						<DropdownTrigger>
-							<Button variant="bordered">Select</Button>
-						</DropdownTrigger>
-						<DropdownMenu
-							aria-label="Dynamic Actions"
-							disabledKeys={
-								latestResult && latestResult.status === "running"
-									? ["train", "test"]
-									: []
-							}
-						>
-							<DropdownItem
-								color="primary"
-								onClick={() => openTrainModel(item)}
-								key={"train"}
-							>
-								Train Model
-							</DropdownItem>
-							<DropdownItem
-								color="primary"
-								onClick={() => openTestModel(item)}
-								key={"test"}
-							>
-								Test Model
-							</DropdownItem>
-							<DropdownItem
-								color="danger"
-								className="text-danger"
-								// onClick={() => openRunJobModal(item)}
-							>
-								Close Job
-							</DropdownItem>
-						</DropdownMenu>
-					</Dropdown>
-				</div>
+				<ButtonGroup fullWidth isDisabled={item.closed}>
+					<Button
+						onPress={() => openTrainModal(item)}
+						isIconOnly
+						isDisabled={latestResult && latestResult.status === "running"}
+					>
+						<PlayIcon />
+					</Button>
+					<Button
+						onPress={() => openTestModal(item)}
+						isIconOnly
+						isDisabled={latestResult && latestResult.status === "running"}
+					>
+						<TestIcon />
+					</Button>
+					<Button
+						onPress={() => openStopModal(item)}
+						isIconOnly
+						isDisabled={!latestResult || latestResult.status != "running"}
+					>
+						<StopIcon />
+					</Button>
+					<Button
+						onPress={() => openDeleteModal(item)}
+						isIconOnly
+						isDisabled={latestResult && latestResult.status === "close"}
+					>
+						<DeleteIcon />
+					</Button>
+				</ButtonGroup>
 			);
 		case "created":
 			const date = new Date(item.created as string);
@@ -120,23 +120,36 @@ export const JobsList = ({ filter, jobs }: { filter: string; jobs: any[] }) => {
 		useDisclosure();
 	const { isOpen: isTestModelOpen, onOpenChange: onTestOpenChange } =
 		useDisclosure();
-	const [runTrainJob, setRunTrainJob] = useState<any>({});
-	const [runTestJob, setRunTestJob] = useState<any>({});
+	const { isOpen: isStopOpen, onOpenChange: onStopOpenChange } =
+		useDisclosure();
+	const { isOpen: isDeleteOpen, onOpenChange: onDeleteOpenChange } =
+		useDisclosure();
+	const [selectedJob, setSelectedJob] = useState<any>({});
 	const { user } = useUser();
 	const router = useRouter();
 
-	const openTrainModel = (job: any) => {
+	const openTrainModal = (job: any) => {
 		onTrainOpenChange();
-		setRunTrainJob(job);
+		setSelectedJob(job);
 	};
 
-	const openTestModel = (job: any) => {
+	const openTestModal = (job: any) => {
 		onTestOpenChange();
-		setRunTestJob(job);
+		setSelectedJob(job);
 	};
 
 	const closeTrainModal = () => {
 		onTrainOpenChange();
+	};
+
+	const openStopModal = (job: any) => {
+		onStopOpenChange();
+		setSelectedJob(job);
+	};
+
+	const openDeleteModal = (job: any) => {
+		onDeleteOpenChange();
+		setSelectedJob(job);
 	};
 
 	// set filtered jobs to jobs on first render
@@ -207,6 +220,44 @@ export const JobsList = ({ filter, jobs }: { filter: string; jobs: any[] }) => {
 		}, 5000); // 5 seconds
 	};
 
+	const runStop = (data: { job_id: string }) => {
+		if (user === undefined) router.push("/api/auth/login");
+		if (data.job_id === undefined) return;
+
+		const body = {
+			job_id: data.job_id,
+			user_id: user?.email,
+		};
+		if (!user) return;
+		client.POST(
+			"/api/jobs/stop",
+			dataWithAccessToken({ user, params: { query: { job_id: data.job_id } } })
+		);
+		onStopOpenChange();
+		setTimeout(() => {
+			window.location.reload();
+		}, 5000); // 5 seconds
+	};
+
+	const runDelete = (data: { job_id: string }) => {
+		if (user === undefined) router.push("/api/auth/login");
+		if (data.job_id === undefined) return;
+
+		const body = {
+			job_id: data.job_id,
+			user_id: user?.email,
+		};
+		if (!user) return;
+		client.POST(
+			"/api/jobs/close",
+			dataWithAccessToken({ user, params: { query: { job_id: data.job_id } } })
+		);
+		onDeleteOpenChange();
+		setTimeout(() => {
+			window.location.reload();
+		}, 5000); // 5 seconds
+	};
+
 	return (
 		<div className=" w-full flex flex-col gap-4">
 			<Table aria-label="Example table with custom cells">
@@ -232,7 +283,14 @@ export const JobsList = ({ filter, jobs }: { filter: string; jobs: any[] }) => {
 						<TableRow key={job.id}>
 							{(columnKey) => (
 								<TableCell key={columnKey}>
-									{RenderCell(columnKey, job, openTrainModel, openTestModel)}
+									{RenderCell(
+										columnKey,
+										job,
+										openTrainModal,
+										openTestModal,
+										openStopModal,
+										openDeleteModal
+									)}
 								</TableCell>
 							)}
 						</TableRow>
@@ -243,7 +301,7 @@ export const JobsList = ({ filter, jobs }: { filter: string; jobs: any[] }) => {
 			<TrainModelModal
 				isOpen={isTrainModelOpen}
 				onOpenChange={onTrainOpenChange}
-				job={runTrainJob}
+				job={selectedJob}
 				closeModal={closeTrainModal}
 				runTrain={runTrain}
 			/>
@@ -251,9 +309,25 @@ export const JobsList = ({ filter, jobs }: { filter: string; jobs: any[] }) => {
 			<TestModelModal
 				isOpen={isTestModelOpen}
 				onOpenChange={onTestOpenChange}
-				job={runTestJob}
+				job={selectedJob}
 				closeModal={onTestOpenChange}
 				runTest={runTest}
+			/>
+
+			<StopRunModal
+				isOpen={isStopOpen}
+				onOpenChange={onStopOpenChange}
+				job={selectedJob}
+				closeModal={onStopOpenChange}
+				runStop={runStop}
+			/>
+
+			<DeleteRunModal
+				isOpen={isDeleteOpen}
+				onOpenChange={onDeleteOpenChange}
+				job={selectedJob}
+				closeModal={onDeleteOpenChange}
+				runDelete={runDelete}
 			/>
 		</div>
 	);
@@ -522,5 +596,136 @@ const TestModelModal = ({
 				)}
 			</ModalContent>
 		</Modal>
+	);
+};
+
+const StopRunModal = ({
+	isOpen,
+	onOpenChange,
+	job,
+	closeModal,
+	runStop,
+}: {
+	isOpen: boolean;
+	onOpenChange: () => void;
+	job: {
+		id: string;
+		model_name: string;
+		description: string;
+		results: {
+			id: string;
+			name: string;
+			created: string;
+			status: string;
+			type: string;
+		}[];
+	};
+	closeModal: () => void;
+	runStop: (data: { job_id: string }) => void;
+}) => {
+	const [isLoading, setIsLoading] = useState(false);
+
+	const handleSubmit = () => {
+		setIsLoading(true);
+		runStop({ job_id: job.id });
+		setIsLoading(false);
+		closeModal();
+	};
+
+	return (
+		<>
+			<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+				<ModalContent>
+					{(onClose) => (
+						<>
+							<ModalHeader className="flex flex-col gap-1">
+								Modal Title
+							</ModalHeader>
+							<ModalBody>
+								<p>Are you sure you want to stop this job?</p>
+							</ModalBody>
+							<ModalFooter>
+								<Button
+									color="danger"
+									variant="light"
+									onPress={handleSubmit}
+									isLoading={isLoading}
+								>
+									Yes
+								</Button>
+								<Button color="primary" onPress={closeModal}>
+									No
+								</Button>
+							</ModalFooter>
+						</>
+					)}
+				</ModalContent>
+			</Modal>
+		</>
+	);
+};
+
+const DeleteRunModal = ({
+	isOpen,
+	onOpenChange,
+	job,
+	closeModal,
+	runDelete,
+}: {
+	isOpen: boolean;
+	onOpenChange: () => void;
+	job: {
+		id: string;
+		model_name: string;
+		description: string;
+		results: {
+			id: string;
+			name: string;
+			created: string;
+			status: string;
+			type: string;
+		}[];
+	};
+	closeModal: () => void;
+	runDelete: (data: { job_id: string }) => void;
+}) => {
+	const [isLoading, setIsLoading] = useState(false);
+
+	const handleSubmit = () => {
+		setIsLoading(true);
+		runDelete({ job_id: job.id });
+		setIsLoading(false);
+		closeModal();
+	};
+	return (
+		<>
+			<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+				<ModalContent>
+					{(onClose) => (
+						<>
+							<ModalHeader className="flex flex-col gap-1">
+								Modal Title
+							</ModalHeader>
+							<ModalBody>
+								<p>Are you sure you want to stop this job?</p>
+							</ModalBody>
+							<ModalFooter>
+								<Button
+									color="danger"
+									variant="light"
+									onPress={handleSubmit}
+									isLoading={isLoading}
+								>
+									Yes
+								</Button>
+								<Button color="primary" onPress={closeModal}>
+									No
+								</Button>
+							</ModalFooter>
+						</>
+					)}
+				</ModalContent>
+			</Modal>
+		</>
 	);
 };
