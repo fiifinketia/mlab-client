@@ -7,7 +7,7 @@ const CustomError = () => {
 	const message = router.query.message as string;
 	const code = parseInt(router.query.code as string);
 	// return <DataSetInfo owner={router.query.slug[0]} datasetName={router.query.slug[1]}/>;
-	return <Error statusCode={code || 500} title={message} withDarkMode />;
+	return <Error statusCode={code || 500} title={message} withDarkMode={true} />;
 };
 
 CustomError.getInitialProps = async (ctx: any) => {

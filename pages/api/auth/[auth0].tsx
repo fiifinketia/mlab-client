@@ -14,15 +14,26 @@ export default handleAuth({
 			if (error instanceof CallbackHandlerError) {
 				if (
 					error.message.includes("Please verify your email before continuing.")
-				) {
-					// route to error page with query parameters for error
-					// res.writeHead(302, {
-					// 	Location: `/error?message=${error.message}`,
-					// });
+				)
+					res
+						.status(400)
+						.redirect(`/error?message=${error.message}&code=${400}`);
+
+				if (
+					error.message.includes("you do not have required roles for this app")
+				)
+					res
+						.status(400)
+						.redirect(`/error?message=${error.message}&code=${400}`);
+				else {
 					res
 						.status(400)
 						.redirect(`/error?message=${error.message}&code=${400}`);
 				}
+			} else {
+				const message =
+					"Some error occurred, please try again later or contact support for help.";
+				res.status(500).redirect(`/error?message=${message}&code=${500}`);
 			}
 		}
 	},
