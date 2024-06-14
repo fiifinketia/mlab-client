@@ -23,6 +23,17 @@ function MyApp({ Component, pageProps }: AppProps) {
 			</NextThemesProvider>
 		);
 	}
+	if (router.pathname.startsWith("/error")) {
+		return (
+			<NextThemesProvider defaultTheme="dark" attribute="class">
+				<NextUIProvider>
+					<UserProvider>
+						<Component {...pageProps} />
+					</UserProvider>
+				</NextUIProvider>
+			</NextThemesProvider>
+		);
+	}
 	return (
 		<NextThemesProvider defaultTheme="dark" attribute="class">
 			<NextUIProvider>

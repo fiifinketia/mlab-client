@@ -9,6 +9,6 @@ export const config = {
 		 * - /auth
 		 * -
 		 * */
-		"/((?!api|auth|_next/static|_next/image|favicon.ico).*)",
+		"/((?!api|auth|error|_next/static|_next/image|favicon.ico).*)",
 	],
 };
