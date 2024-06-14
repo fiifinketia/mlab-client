@@ -27,7 +27,6 @@ export const Jobs = () => {
 		// 	router.push("/api/auth/login");
 		// }
 
-		const user_email = localStorage.getItem("user_email");
 		if (!user) return;
 		const fetchJobs = async () => {
 			const { response: res } = await client.GET(

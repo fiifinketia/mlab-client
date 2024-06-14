@@ -3,7 +3,7 @@ import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { NextPage } from "next";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import React from "react";
-import { client, dataWithAccessToken } from "../../../../lib";
+import { client, dataWithAccessToken } from "../../../lib";
 
 const Configurations: NextPage = () => {
 	const { user } = useUser();

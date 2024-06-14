@@ -1,17 +1,14 @@
-import type { NextRequest } from "next/server";
+import { withMiddlewareAuthRequired } from "@auth0/nextjs-auth0/edge";
 
-export function middleware(request: NextRequest) {
-	const currentUser = request.cookies.get("currentUser")?.value;
-
-	if (currentUser && !request.nextUrl.pathname.startsWith("/app")) {
-		return Response.redirect(new URL("/app", request.url));
-	}
-
-	if (!currentUser && !request.nextUrl.pathname.startsWith("/")) {
-		return Response.redirect(new URL("/", request.url));
-	}
-}
+export default withMiddlewareAuthRequired();
 
 export const config = {
-	matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+	matcher: [
+		/*
+		 * Match all request paths except for the ones starting with:
+		 * - /auth
+		 * -
+		 * */
+		"/((?!api|auth|_next/static|_next/image|favicon.ico).*)",
+	],
 };

@@ -66,12 +66,12 @@ const RenderCell = (
 				</Tooltip>
 			);
 		case "results":
-			if (item.ready && !item.closed) return <Chip color="primary">Ready</Chip>;
+			if (item.ready && !item.closed) return <Chip color="success">Ready</Chip>;
 			if (latestResult && latestResult.status === "running")
 				return <Chip color="warning">Running</Chip>;
 			if (latestResult && latestResult.status === "error")
 				return <Chip color="danger">Error</Chip>;
-			if (!item.ready) <Chip color="secondary">Not Ready</Chip>;
+			if (!item.ready) <Chip color="default">Not Ready</Chip>;
 			return <Chip color="secondary">Closed</Chip>;
 		case "actions":
 			return (
@@ -79,14 +79,14 @@ const RenderCell = (
 					<Button
 						onPress={() => openTrainModal(item)}
 						isIconOnly
-						isDisabled={latestResult && latestResult.status === "running"}
+						isDisabled={!item.ready}
 					>
 						<PlayIcon />
 					</Button>
 					<Button
 						onPress={() => openTestModal(item)}
 						isIconOnly
-						isDisabled={latestResult && latestResult.status === "running"}
+						isDisabled={!item.ready}
 					>
 						<TestIcon />
 					</Button>
@@ -100,7 +100,7 @@ const RenderCell = (
 					<Button
 						onPress={() => openDeleteModal(item)}
 						isIconOnly
-						isDisabled={latestResult && latestResult.status === "close"}
+						isDisabled={!item.ready}
 					>
 						<DeleteIcon />
 					</Button>

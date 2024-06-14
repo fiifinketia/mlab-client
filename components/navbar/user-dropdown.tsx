@@ -23,11 +23,11 @@ export const UserDropdown = () => {
 			return;
 		}
 		if (key === "settings") {
-			router.push("/app/settings");
+			router.push("/settings");
 			return;
 		}
 		if (key === "configurations") {
-			router.push("/app/settings/configurations");
+			router.push("/settings/configurations");
 			return;
 		}
 	};

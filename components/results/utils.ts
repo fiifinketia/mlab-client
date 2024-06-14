@@ -48,6 +48,7 @@ export const statusColorMap: Record<string, ChipProps["color"]> = {
 	running: "warning",
 	error: "danger",
 	done: "success",
+	stopped: "secondary",
 };
 
 export function capitalize(str: string) {
@@ -86,11 +87,12 @@ export const columns = [
 ];
 
 export const statusOptions = [
-    { value: "all", label: "All" },
-    { value: "pending", label: "Pending" },
-    { value: "running", label: "Running" },
-    { value: "done", label: "Completed" },
-    { value: "error", label: "Failed" },
+	{ value: "all", label: "All" },
+	{ value: "pending", label: "Pending" },
+	{ value: "running", label: "Running" },
+	{ value: "done", label: "Completed" },
+	{ value: "error", label: "Failed" },
+	{ value: "stopped", label: "Stopped" },
 ];
 
 export const typeOptions = [

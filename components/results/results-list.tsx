@@ -59,7 +59,6 @@ export function ResultsList() {
 	React.useEffect(() => {
 		const fetchResults = async () => {
 			if (user === undefined) {
-				router.push("/");
 				return;
 			}
 			const results = await getResults(user);
@@ -67,7 +66,7 @@ export function ResultsList() {
 			setPages(Math.ceil(results.length / rowsPerPage));
 		};
 		fetchResults();
-	}, []);
+	}, [user]);
 	const [filterValue, setFilterValue] = React.useState("");
 	const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
 		new Set([])
@@ -165,6 +164,9 @@ export function ResultsList() {
 				if (a[sortDescriptor.column] === "running") {
 					return sortDescriptor.direction === "ascending" ? 1 : -1;
 				}
+				if (a[sortDescriptor.column] === "stopped") {
+					return sortDescriptor.direction === "ascending" ? 1 : -1;
+				}
 			}
 			if (sortDescriptor.column === "created") {
 				return sortDescriptor.direction === "ascending"
@@ -218,11 +220,6 @@ export function ResultsList() {
 						</Chip>
 					);
 				case "actions":
-					// If it's done or error, enable download
-					const isRunning = result.status === "running";
-
-					const disabled = isRunning;
-
 					return (
 						<div className="flex gap-2">
 							<Button size="sm" onClick={() => openResults(result)}>
@@ -442,7 +439,7 @@ export function ResultsList() {
 	}, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
 	const openResults = (item: any) => {
-		router.push(`/app/results/${item.id}`);
+		router.push(`/results/${item.id}`);
 	};
 
 	return (

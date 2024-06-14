@@ -10,27 +10,14 @@ import { useRouter } from "next/router";
 function MyApp({ Component, pageProps }: AppProps) {
 	const router = useRouter();
 	// If route is /app, display the layout component
-	if (router.pathname.startsWith("/app")) {
-		if (router.pathname.startsWith("/app/settings")) {
-			return (
-				<NextThemesProvider defaultTheme="dark" attribute="class">
-					<NextUIProvider navigate={router.push}>
-						<UserProvider>
-							<SettingsLayout>
-								<Component {...pageProps} />
-							</SettingsLayout>
-						</UserProvider>
-					</NextUIProvider>
-				</NextThemesProvider>
-			);
-		}
+	if (router.pathname.startsWith("/settings")) {
 		return (
 			<NextThemesProvider defaultTheme="dark" attribute="class">
-				<NextUIProvider>
+				<NextUIProvider navigate={router.push}>
 					<UserProvider>
-						<Layout>
+						<SettingsLayout>
 							<Component {...pageProps} />
-						</Layout>
+						</SettingsLayout>
 					</UserProvider>
 				</NextUIProvider>
 			</NextThemesProvider>
@@ -40,7 +27,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<NextThemesProvider defaultTheme="dark" attribute="class">
 			<NextUIProvider>
 				<UserProvider>
-					<Component {...pageProps} />
+					<Layout>
+						<Component {...pageProps} />
+					</Layout>
 				</UserProvider>
 			</NextUIProvider>
 		</NextThemesProvider>

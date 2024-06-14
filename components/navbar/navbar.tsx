@@ -23,7 +23,7 @@ export const NavbarWrapper = ({ children }: Props) => {
 					<BurguerButton />
 				</NavbarContent>
 				<NavbarContent className="w-auto">
-					<Link className="text-2xl text-white font-bold" href={"/app"}>
+					<Link className="text-2xl text-white font-bold" href={"/"}>
 						MLAB
 					</Link>
 				</NavbarContent>

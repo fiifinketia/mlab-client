@@ -12,7 +12,6 @@ export const ModelsList = ({ filter }: { filter: string }) => {
 	useEffect(() => {
 		try {
 			if (user === undefined) {
-				router.push("/");
 				return;
 			}
 			const fetchModels = async () => {

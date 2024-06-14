@@ -68,7 +68,6 @@ export const AddJob = () => {
 	useEffect(() => {
 		const fetchModels = async () => {
 			if (!user) {
-				router.push("/");
 				return;
 			}
 			const { response: res } = await client.GET(
@@ -81,7 +80,6 @@ export const AddJob = () => {
 
 		const fetchDatasets = async () => {
 			if (!user) {
-				router.push("/");
 				return;
 			}
 			const { response: res } = await client.GET(
@@ -93,7 +91,7 @@ export const AddJob = () => {
 		};
 		fetchDatasets();
 		fetchModels();
-	}, []);
+	}, [user]);
 
 	return (
 		<div>

@@ -29,86 +29,86 @@ export const SidebarWrapper = () => {
   const [models, setModels] = React.useState<[{}]>([{}]);
 
   return (
-    <aside className="h-screen z-[202] sticky top-0">
-      {collapsed ? (
-        <div className={Sidebar.Overlay()} onClick={setCollapsed} />
-      ) : null}
-      <div
-        className={Sidebar({
-          collapsed: collapsed,
-        })}
-      >
-        {/* <div className={Sidebar.Header()}>
+		<aside className="h-screen z-[202] sticky top-0">
+			{collapsed ? (
+				<div className={Sidebar.Overlay()} onClick={setCollapsed} />
+			) : null}
+			<div
+				className={Sidebar({
+					collapsed: collapsed,
+				})}
+			>
+				{/* <div className={Sidebar.Header()}>
           <CompaniesDropdown />
         </div> */}
-        <div className="flex flex-col justify-between h-full">
-          <div className={Sidebar.Body()}>
-            <SidebarItem
-              title="Home"
-              icon={<HomeIcon />}
-              isActive={router.pathname === "/app"}
-              href="/app"
-            />
-            <SidebarMenu title="Main Menu">
-              <SidebarItem
-                isActive={router.pathname === "/app/datasets"}
-                title="Datasets"
-                icon={<DatasetsIcon />}
-                href="/app/datasets"
-              />
-              <SidebarItem
-                isActive={router.pathname === "/app/models"}
-                title="Models"
-                icon={<CubeIcon />}
-                href="/app/models"
-              />
-              <SidebarItem
-                isActive={router.pathname === "/app/jobs"}
-                title="Jobs"
-                icon={<JobIcon />}
-                href="/app/jobs"
-              />
-              {/* <SidebarItem
+				<div className="flex flex-col justify-between h-full">
+					<div className={Sidebar.Body()}>
+						<SidebarItem
+							title="Home"
+							icon={<HomeIcon />}
+							isActive={router.pathname === "/"}
+							href="/"
+						/>
+						<SidebarMenu title="Main Menu">
+							<SidebarItem
+								isActive={router.pathname === "/datasets"}
+								title="Datasets"
+								icon={<DatasetsIcon />}
+								href="/datasets"
+							/>
+							<SidebarItem
+								isActive={router.pathname === "/models"}
+								title="Models"
+								icon={<CubeIcon />}
+								href="/models"
+							/>
+							<SidebarItem
+								isActive={router.pathname === "/jobs"}
+								title="Jobs"
+								icon={<JobIcon />}
+								href="/jobs"
+							/>
+							{/* <SidebarItem
                 isActive={router.pathname === "/products"}
                 title="Products"
                 icon={<ProductsIcon />}
               /> */}
-              <SidebarItem
-                isActive={router.pathname === "/app/results"}
-                title="Results"
-                icon={<ReportsIcon />}
-                href="/app/results"
-              />
-            </SidebarMenu>
+							<SidebarItem
+								isActive={router.pathname === "/results"}
+								title="Results"
+								icon={<ReportsIcon />}
+								href="/results"
+							/>
+						</SidebarMenu>
 
-            <SidebarMenu title="General">
-              <SidebarItem
-                isActive={router.pathname === "/docs"}
-                title="Developer Docs"
-                icon={<DevIcon />}
-              />
-              {/* <SidebarItem
+						<SidebarMenu title="General">
+							<SidebarItem
+								isActive={router.pathname === "/docs"}
+								title="Developer Docs"
+								icon={<DevIcon />}
+							/>
+							{/* <SidebarItem
                 isActive={router.pathname === "/view"}
                 title="View Test Data"
                 icon={<ViewIcon />}
               /> */}
-              {/* <SidebarItem
+							{/* <SidebarItem
                 isActive={router.pathname === "/settings"}
                 title="Settings"
                 icon={<SettingsIcon />}
               /> */}
-            </SidebarMenu>
+						</SidebarMenu>
 
-            {/* <SidebarMenu title="Updates">
+						{/* <SidebarMenu title="Updates">
               <SidebarItem
                 isActive={router.pathname === "/changelog"}
                 title="Changelog"
                 icon={<ChangeLogIcon />}
               />
             </SidebarMenu> */}
-          </div>
-          <div className={Sidebar.Footer()}>
-            {/* <Tooltip content={"Settings"} color="primary">
+					</div>
+					<div className={Sidebar.Footer()}>
+						{/* <Tooltip content={"Settings"} color="primary">
               <div className="max-w-fit">
                 <SettingsIcon />
               </div>
@@ -124,9 +124,9 @@ export const SidebarWrapper = () => {
                 size="sm"
               />
             </Tooltip> */}
-          </div>
-        </div>
-      </div>
-    </aside>
-  );
+					</div>
+				</div>
+			</div>
+		</aside>
+	);
 };
