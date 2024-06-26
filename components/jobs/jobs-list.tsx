@@ -57,6 +57,7 @@ const RenderCell = (
 					return new Date(b.created).getTime() - new Date(a.created).getTime();
 			  })[0]
 			: undefined;
+	console.log("🚀 ~ latestResult:", latestResult);
 	switch (columnKey) {
 		case "name":
 			return <span>{item.name}</span>;
