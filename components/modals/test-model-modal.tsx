@@ -11,9 +11,12 @@ import {
 	Checkbox,
 	Select,
 	SelectItem,
+	SelectedItems,
+	Chip,
 } from "@nextui-org/react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import {
+	ResultsResponse,
 	TestModelForm,
 	client,
 	dataWithAccessToken,
@@ -205,6 +208,8 @@ const UseModelFormComponent = ({
 		new Set([])
 	);
 	const [preTrainedResults, setPreTrainedResults] = useState<any[]>([]);
+	const [latestPretrainedModel, setLatestPreTrainedModel] =
+		useState<string>("");
 	useEffect(() => {
 		if (useDefaultPretrainedModel) {
 			setUseModel({
@@ -226,6 +231,16 @@ const UseModelFormComponent = ({
 			)
 		);
 	}, [job, useDefaultPretrainedModel, customPreTrainedModel, modelName]);
+
+	// useEffect(() => {
+	// 	const latestResult =
+	// 		preTrainedResults.length > 0 &&
+	// 		preTrainedResults.reduce((prev, item) => {
+	// 			return new Date(prev.modified) > new Date(item.modified) ? prev : item;
+	// 		});
+	// 	console.log("🚀 ~ useEffect ~ latestResult:", latestResult);
+	// 	if (latestResult) setLatestPreTrainedModel(latestResult?.id || "");
+	// }, [preTrainedResults]);
 
 	const SetParametersSection = useMemo(() => {
 		return (
@@ -300,19 +315,29 @@ const UseModelFormComponent = ({
 						setCustomPreTrainedModel(new Set([e.target.value]));
 						setChangeParams(true);
 					}}
+					items={preTrainedResults}
 				>
-					{preTrainedResults &&
-						preTrainedResults.map((result: any) => (
-							<SelectItem
-								key={result.id}
-								value={result.id}
-								title={result.name}
-							/>
-						))}
+					{(item) => (
+						<SelectItem key={item.id} textValue={item.name}>
+							<div key={item.key} className="flex items-center gap-2">
+								<div className="flex flex-col">
+									<span>{item.name}</span>
+									<span className="text-default-500 text-tiny">
+										{new Date(item.modified).toLocaleString()}
+									</span>
+								</div>
+							</div>
+						</SelectItem>
+					)}
 				</Select>
 			</>
 		);
-	}, [useDefaultPretrainedModel, customPreTrainedModel, preTrainedResults]);
+	}, [
+		useDefaultPretrainedModel,
+		customPreTrainedModel,
+		preTrainedResults,
+		latestPretrainedModel,
+	]);
 	return (
 		<form className="flex flex-col gap-4 h-[300px]">
 			<Input
