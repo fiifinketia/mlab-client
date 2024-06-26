@@ -94,7 +94,7 @@ const RenderCell = (
 					<Button
 						onPress={() => openStopModal(item)}
 						isIconOnly
-						isDisabled={latestResult.status === "running"}
+						isDisabled={!latestResult}
 					>
 						<StopIcon />
 					</Button>
