@@ -76,7 +76,7 @@ const RenderCell = (
 			return <Chip color="secondary">Closed</Chip>;
 		case "actions":
 			return (
-				<ButtonGroup fullWidth isDisabled={item.closed}>
+				<ButtonGroup fullWidth>
 					<Button
 						onPress={() => openTrainModal(item)}
 						isIconOnly
