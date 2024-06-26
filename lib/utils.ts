@@ -36,3 +36,10 @@ export const generateAccessToken = (user: UserProfile) => {
 	);
 	return token;
 };
+
+export const generateName = (job: any) => {
+	const date = new Date();
+	return `${job.name}-${date.getFullYear()}-${
+		date.getMonth() + 1
+	}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
+};

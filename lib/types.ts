@@ -12,4 +12,5 @@ export type Model = components["schemas"]["Model"];
 export type Job = components["schemas"]["Job"];
 export type ResultsResponse = components["schemas"]["ResultResponse"];
 export type ResultResponseFiles = components["schemas"]["ResultResponse"]["files"];
+export type TestModelForm = components["schemas"]["TestModelIn"];
 // export type JobWithResults = components["schemas"]["JobWithResults"];

@@ -11,7 +11,6 @@ import {
 	Button,
 	Selection,
 	Textarea,
-	Modal,
 	ModalContent,
 	ModalHeader,
 	ModalBody,
@@ -19,6 +18,7 @@ import {
 } from "@nextui-org/react";
 import { downloadFile, sizeToString } from "../results/utils";
 import { useState, useEffect, Key } from "react";
+import { AppModal } from "../modals";
 
 const FILES_COLUMNS = [
 	{ name: "NAME", uid: "name" },
@@ -86,7 +86,7 @@ export const FilesTable = ({
 				</TableBody>
 			</Table>
 			{/* Display file content if selected */}
-			<Modal size="lg" isOpen={isOpen} onClose={onClose} placement="top-center">
+			<AppModal size="lg" isOpen={isOpen} onClose={onClose} placement="top-center">
 				<ModalContent>
 					{(onClose) => (
 						<>
@@ -103,7 +103,7 @@ export const FilesTable = ({
 						</>
 					)}
 				</ModalContent>
-			</Modal>
+			</AppModal>
 		</div>
 	);
 };

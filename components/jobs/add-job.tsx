@@ -2,7 +2,6 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import {
 	Button,
 	Input,
-	Modal,
 	ModalBody,
 	ModalContent,
 	ModalFooter,
@@ -21,6 +20,7 @@ import {
 	client,
 	dataWithAccessToken,
 } from "../../lib";
+import { AppModal } from "../modals";
 
 export const AddJob = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -45,7 +45,14 @@ export const AddJob = () => {
 					  )[0].parameters
 					: defaultParams,
 			};
-			client.POST("/api/jobs", dataWithAccessToken({ user, body }));
+			client
+				.POST("/api/jobs", dataWithAccessToken({ user, body }))
+				.then(async () => {
+					onOpenChange();
+					setTimeout(() => {
+						window.location.reload();
+					}, 5000); // 5 seconds
+				});
 		} catch (error) {
 			console.log(error);
 			alert("Error adding job. Please try again.");
@@ -99,7 +106,7 @@ export const AddJob = () => {
 				<Button onPress={onOpen} color="primary">
 					Add Job
 				</Button>
-				<Modal
+				<AppModal
 					isOpen={isOpen}
 					onOpenChange={onOpenChange}
 					placement="top-center"
@@ -214,7 +221,7 @@ export const AddJob = () => {
 							</>
 						)}
 					</ModalContent>
-				</Modal>
+				</AppModal>
 			</>
 		</div>
 	);

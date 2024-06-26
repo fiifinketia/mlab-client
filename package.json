@@ -7,7 +7,7 @@
 		"build": "next build",
 		"start": "NODE_ENV=production next start -p 8099 -H 0.0.0.0",
 		"lint": "next lint",
-		"generate:sdk": "NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-typescript http://0.0.0.0:8090/api/openapi.json --output lib/mapi.ts"
+		"generate:sdk": "NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-typescript http://197.255.122.208:8090/api/openapi.json --output lib/mapi.ts"
 	},
 	"dependencies": {
 		"@auth0/nextjs-auth0": "^3.2.0",
@@ -34,12 +34,14 @@
 		"rehype-raw": "^7.0.0",
 		"remark-gfm": "^4.0.0",
 		"remark-html": "^16.0.1",
-		"socket.io-client": "^4.7.5"
+		"socket.io-client": "^4.7.5",
+		"styled-components": "^6.1.11"
 	},
 	"devDependencies": {
 		"@types/node": "18.7.18",
 		"@types/react": "18.0.20",
 		"@types/react-dom": "18.0.6",
+		"@types/styled-theming": "^2.2.8",
 		"autoprefixer": "^10.4.15",
 		"eslint": "8.23.1",
 		"eslint-config-next": "13.4.16",

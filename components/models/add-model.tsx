@@ -5,7 +5,6 @@ import {
 	Button,
 	Code,
 	Input,
-	Modal,
 	ModalBody,
 	ModalContent,
 	ModalFooter,
@@ -18,6 +17,7 @@ import { Select, SelectItem } from "@nextui-org/select";
 import { TrashIcon } from "../icons/accounts/trash-icon";
 import { client, dataWithAccessToken } from "../../lib/api";
 import { CreateModelForm, Model, makeCloneUrl } from "../../lib";
+import { AppModal } from "../modals";
 
 export const AddModel = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -98,7 +98,7 @@ export const AddModel = () => {
 			>
 				Add Model
 			</Button>
-			<Modal
+			<AppModal
 				isOpen={isOpen}
 				onClose={onOpenChange}
 				placement="top-center"
@@ -187,9 +187,9 @@ export const AddModel = () => {
 						</Button>
 					</ModalFooter>
 				</ModalContent>
-			</Modal>
+			</AppModal>
 			{isCompleted && (
-				<Modal
+				<AppModal
 					isOpen={isCompleted}
 					onOpenChange={() => (!isCompleted ? setIsCompleted(true) : null)}
 					placement="top-center"
@@ -231,7 +231,7 @@ export const AddModel = () => {
 							</div>
 						)}
 					</ModalContent>
-				</Modal>
+				</AppModal>
 			)}
 		</div>
 	);

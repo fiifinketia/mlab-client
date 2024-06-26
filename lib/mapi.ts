@@ -71,6 +71,13 @@ export interface paths {
      */
     post: operations["run_train_model_api_jobs_train_post"];
   };
+  "/api/jobs/{job_id}/upload/test": {
+    /**
+     * Upload test data for model
+     * @description Upload test data for model.
+     */
+    post: operations["upload_test_data_api_jobs__job_id__upload_test_post"];
+  };
   "/api/jobs/test": {
     /**
      * Run job to test model
@@ -149,12 +156,28 @@ export interface paths {
      */
     post: operations["gen_key_pair_api_iam_ssh_key_post"];
   };
+  "/api/projects": {
+    /**
+     * Get Projects
+     * @description Get all projects.
+     */
+    get: operations["get_projects_api_projects_get"];
+  };
 }
 
 export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** Body_upload_test_data_api_jobs__job_id__upload_test_post */
+    Body_upload_test_data_api_jobs__job_id__upload_test_post: {
+      /**
+       * File
+       * Format: binary
+       * @description Test data file
+       */
+      file: string;
+    };
     /**
      * CreateModelRequest
      * @description Request model for creating a new model.
@@ -267,6 +290,12 @@ export interface components {
       files?: unknown[];
     };
     /**
+     * DatasetType
+     * @description An enumeration.
+     * @enum {string}
+     */
+    DatasetType: "default" | "upload";
+    /**
      * FileResponse
      * @description File
      */
@@ -304,6 +333,7 @@ export interface components {
      *       "name": "string",
      *       "result_type": "string",
      *       "dataset_id": "uuid",
+     *       "dataset_type": "string",
      *       "status": "string",
      *       "created": "datetime",
      *       "modified": "datetime",
@@ -404,7 +434,8 @@ export interface components {
      *   "clone_url": "string",
      *   "owner_id": "string",
      *   "parameters": "{\"json\": \"json\"}",
-     *   "private": true
+     *   "private": true,
+     *   "default_model": "string"
      * }
      */
     Model: {
@@ -446,6 +477,8 @@ export interface components {
        * @default false
        */
       private?: boolean;
+      /** Default Model */
+      default_model?: string;
     };
     /**
      * ModelResponse
@@ -483,6 +516,12 @@ export interface components {
        */
       files?: unknown[];
     };
+    /**
+     * ModelType
+     * @description An enumeration.
+     * @enum {string}
+     */
+    ModelType: "default" | "pretrained" | "custom";
     /**
      * ResultResponse
      * @description Result response
@@ -528,40 +567,28 @@ export interface components {
       dataset_name: string;
       /** Dataset Description */
       dataset_description: string;
+      /** Pretrained Model */
+      pretrained_model?: string;
     };
     /**
      * TestModelIn
      * @description Test model in
      */
     TestModelIn: {
+      /** Name */
+      name: string;
       /**
        * Job Id
        * Format: uuid
        */
       job_id: string;
-      /** User Id */
-      user_id: string;
-      /**
-       * Dataset Id
-       * Format: uuid
-       */
-      dataset_id: string;
       /**
        * Parameters
        * @default {}
        */
       parameters?: Record<string, never>;
-      /**
-       * Use Train Result Id
-       * Format: uuid
-       */
-      use_train_result_id?: string;
-      /** Name */
-      name: string;
-      /** Model Branch */
-      model_branch?: string;
-      /** Dataset Branch */
-      dataset_branch?: string;
+      model: components["schemas"]["UseModel"];
+      dataset: components["schemas"]["UseDataset"];
     };
     /**
      * TrainModelIn
@@ -573,8 +600,6 @@ export interface components {
        * Format: uuid
        */
       job_id: string;
-      /** User Id */
-      user_id: string;
       /**
        * Parameters
        * @default {}
@@ -591,6 +616,22 @@ export interface components {
     UpdateKeyRequest: {
       /** Public Key */
       public_key: string;
+    };
+    /** UseDataset */
+    UseDataset: {
+      type: components["schemas"]["DatasetType"];
+      /** Branch */
+      branch?: string;
+      /** Path */
+      path?: string;
+    };
+    /** UseModel */
+    UseModel: {
+      type: components["schemas"]["ModelType"];
+      /** Result Id */
+      result_id?: string;
+      /** Branch */
+      branch?: string;
     };
     /**
      * UserKeyPair
@@ -867,6 +908,36 @@ export interface operations {
     };
   };
   /**
+   * Upload test data for model
+   * @description Upload test data for model.
+   */
+  upload_test_data_api_jobs__job_id__upload_test_post: {
+    parameters: {
+      path: {
+        job_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_test_data_api_jobs__job_id__upload_test_post"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Run job to test model
    * @description Run job to test model.
    */
@@ -1130,6 +1201,20 @@ export interface operations {
       422: {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Projects
+   * @description Get all projects.
+   */
+  get_projects_api_projects_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
         };
       };
     };

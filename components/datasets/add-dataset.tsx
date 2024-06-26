@@ -3,7 +3,6 @@ import {
 	Button,
 	Code,
 	Input,
-	Modal,
 	ModalBody,
 	ModalContent,
 	ModalFooter,
@@ -21,6 +20,7 @@ import {
 	Dataset,
 	makeCloneUrl,
 } from "../../lib";
+import { AppModal } from "../modals";
 
 export const AddDataset = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -74,10 +74,10 @@ export const AddDataset = () => {
 				<Button onPress={onOpen} color="primary">
 					Add Dataset
 				</Button>
-				<Modal
+				<AppModal
 					isOpen={isOpen}
 					onOpenChange={onOpenChange}
-					placement="top-center"
+					placement="center"
 				>
 					<ModalContent>
 						{(onClose) => (
@@ -140,14 +140,17 @@ export const AddDataset = () => {
 							</form>
 						)}
 					</ModalContent>
-				</Modal>
+				</AppModal>
 				{isCompleted && (
-					<Modal
+					<AppModal
 						isOpen={isCompleted}
 						onOpenChange={() => (!isCompleted ? setIsCompleted(true) : null)}
 						placement="top-center"
 						isDismissable={false}
 						closeButton={false}
+						classNames={{
+							wrapper: "z-[100]",
+						}}
 					>
 						<ModalContent>
 							{(onClose) => (
@@ -183,7 +186,7 @@ export const AddDataset = () => {
 								</div>
 							)}
 						</ModalContent>
-					</Modal>
+					</AppModal>
 				)}
 			</>
 		</div>

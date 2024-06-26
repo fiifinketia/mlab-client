@@ -11,6 +11,7 @@ const nextConfig = {
 		JWT_AUDIENCE: process.env.JWT_AUDIENCE,
 		JWT_ISSUER: process.env.JWT_ISSUER,
 		GITLAB_SERVER: process.env.GITLAB_SERVER,
+		GITLAB_TOKEN: process.env.GITLAB_TOKEN,
 	},
 };
 

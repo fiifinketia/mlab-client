@@ -4,7 +4,6 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
 import {
 	Button,
-	Modal,
 	ModalBody,
 	ModalContent,
 	ModalFooter,
@@ -13,6 +12,7 @@ import {
 import Link from "next/link";
 
 import { Dataset, client, dataWithAccessToken, sourceCodeUrl } from "../../lib";
+import { AppModal } from "../modals";
 
 export const DatasetsList = () => {
 	const [datasets, setDatasets] = useState<Dataset[]>([]);
@@ -83,9 +83,12 @@ export const DatasetsList = () => {
 					);
 				})}
 			</div>
-			<Modal
+			<AppModal
 				isOpen={openDatasetContext}
 				onClose={() => setOpenDatasetContext(false)}
+				classNames={{
+					wrapper: "z-[100]",
+				}}
 			>
 				<ModalHeader>Dataset Context</ModalHeader>
 				<ModalContent>
@@ -117,10 +120,13 @@ export const DatasetsList = () => {
 						</div>
 					</ModalBody>
 				</ModalContent>
-			</Modal>
-			<Modal
+			</AppModal>
+			<AppModal
 				isOpen={deleteDatasetModal}
 				onClose={() => setDeleteDatasetModal(false)}
+				classNames={{
+					wrapper: "z-[100]",
+				}}
 			>
 				<ModalHeader>Delete Dataset</ModalHeader>
 				<ModalContent>
@@ -142,7 +148,7 @@ export const DatasetsList = () => {
 						</Button>
 					</ModalFooter>
 				</ModalContent>
-			</Modal>
+			</AppModal>
 		</div>
 	);
 };

@@ -8,7 +8,6 @@ import {
 	Tooltip,
 	Button,
 	Input,
-	Modal,
 	ModalBody,
 	ModalContent,
 	ModalFooter,
@@ -27,11 +26,13 @@ import { useEffect, useState } from "react";
 import { Select, SelectItem } from "@nextui-org/select";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
-import { Job, client, dataWithAccessToken } from "../../lib";
+import { Job, dataWithAccessToken, client } from "../../lib";
 import { TestIcon } from "../icons/test-icon";
 import { PlayIcon } from "../icons/play-icon";
 import { StopIcon } from "../icons/stop-icon";
 import { DeleteIcon } from "../icons/delete-icon";
+import { TestModelModal } from "../modals/test-model-modal";
+import { AppModal } from "../modals";
 
 // Jobs List
 const columns = [
@@ -370,7 +371,7 @@ const TrainModelModal = ({
 	};
 
 	return (
-		<Modal
+		<AppModal
 			isOpen={isOpen}
 			onClose={closeModalAndReset}
 			onOpenChange={onOpenChange}
@@ -448,154 +449,7 @@ const TrainModelModal = ({
 					</>
 				)}
 			</ModalContent>
-		</Modal>
-	);
-};
-
-const TestModelModal = ({
-	isOpen,
-	onOpenChange,
-	job,
-	closeModal,
-	runTest,
-}: {
-	isOpen: boolean;
-	onOpenChange: () => void;
-	job: {
-		id: string;
-		model_name: string;
-		description: string;
-		results: {
-			id: string;
-			name: string;
-			created: string;
-			status: string;
-			type: string;
-		}[];
-	};
-	closeModal: () => void;
-	runTest: (data: {
-		job_id: string;
-		parameters?: any;
-		result_id?: string;
-		name: string;
-	}) => void;
-}) => {
-	const [useDefaultPretrainedModel, setUseDefaultPretrainedModel] =
-		useState<boolean>(true);
-	const [customPreTrainedModel, setCustomPreTrainedModel] = useState<any>(
-		new Set([])
-	);
-	const [name, setName] = useState("");
-
-	const [results, setResults] = useState<any[]>([]);
-
-	useEffect(() => {
-		if (job.results === undefined) return;
-		setResults(
-			job.results.filter(
-				(result) => result.type === "train" && result.status === "done"
-			)
-		);
-	}, [job]);
-
-	const handleSubmit = () => {
-		const data = {
-			job_id: job.id as string,
-			parameters: undefined,
-			result_id: useDefaultPretrainedModel
-				? (Array.from(customPreTrainedModel)[0] as string)
-				: undefined,
-			name: name,
-		};
-		runTest(data);
-	};
-
-	const closeModalAndReset = () => {
-		closeModal();
-	};
-
-	return (
-		<Modal
-			isOpen={isOpen}
-			onClose={closeModalAndReset}
-			onOpenChange={onOpenChange}
-			placement="top-center"
-			isDismissable={false}
-			size="3xl"
-		>
-			<ModalContent>
-				{() => (
-					<>
-						<ModalHeader className="flex flex-col gap-1">
-							Test Model
-						</ModalHeader>
-						<ModalBody>
-							<span>Model Name: {job.model_name}</span>
-							<span>Description: {job.description}</span>
-							<span>Datasets</span>
-							<Input
-								label="Name"
-								variant="bordered"
-								required
-								onChange={(e) => setName(e.target.value)}
-							/>
-							<Switch
-								isSelected={useDefaultPretrainedModel}
-								onChange={() =>
-									setUseDefaultPretrainedModel(!useDefaultPretrainedModel)
-								}
-							>
-								Use default pretrained model
-							</Switch>
-							{useDefaultPretrainedModel && (
-								<Select
-									label={
-										results.length === 0
-											? "No pretrained models"
-											: "Select a pretrained model"
-									}
-									className="max-w-xs"
-									selectedKeys={customPreTrainedModel}
-									onSelectionChange={setCustomPreTrainedModel}
-									isDisabled={
-										!useDefaultPretrainedModel || results.length === 0
-									}
-								>
-									{results.length === 0 ? (
-										<SelectItem value={""} key={"0"} isReadOnly>
-											No pretrained models
-										</SelectItem>
-									) : (
-										results.map((result: any) => {
-											return (
-												<SelectItem key={result.id} value={result.id}>
-													{result.name +
-														" - " +
-														new Date(result.created).toLocaleDateString()}
-												</SelectItem>
-											);
-										})
-									)}
-								</Select>
-							)}
-						</ModalBody>
-						<ModalFooter>
-							<Button
-								color="danger"
-								variant="flat"
-								onClick={closeModalAndReset}
-							>
-								Close
-							</Button>
-							<Button color="primary" onPress={handleSubmit}>
-								Test
-							</Button>
-						</ModalFooter>
-					</>
-				)}
-			</ModalContent>
-		</Modal>
+		</AppModal>
 	);
 };
 
@@ -634,7 +488,7 @@ const StopRunModal = ({
 
 	return (
 		<>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+			<AppModal isOpen={isOpen} onOpenChange={onOpenChange}>
 				<ModalContent>
 					{(onClose) => (
 						<>
@@ -660,7 +514,7 @@ const StopRunModal = ({
 						</>
 					)}
 				</ModalContent>
-			</Modal>
+			</AppModal>
 		</>
 	);
 };
@@ -699,7 +553,7 @@ const DeleteRunModal = ({
 	};
 	return (
 		<>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+			<AppModal isOpen={isOpen} onOpenChange={onOpenChange}>
 				<ModalContent>
 					{(onClose) => (
 						<>
@@ -725,7 +579,7 @@ const DeleteRunModal = ({
 						</>
 					)}
 				</ModalContent>
-			</Modal>
+			</AppModal>
 		</>
 	);
 };

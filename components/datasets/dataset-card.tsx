@@ -3,17 +3,6 @@ import {
 	CardHeader,
 	CardBody,
 	CardFooter,
-	DropdownTrigger,
-	Dropdown,
-	DropdownMenu,
-	DropdownItem,
-	Button,
-	Modal,
-	ModalHeader,
-	ModalBody,
-	PopoverContent,
-	Popover,
-	PopoverTrigger,
 	Tooltip,
 } from "@nextui-org/react";
 import Link from "next/link";
