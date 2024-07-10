@@ -7,7 +7,7 @@
 		"build": "next build",
 		"start": "NODE_ENV=production next start -p 8099 -H 0.0.0.0",
 		"lint": "next lint",
-		"generate:sdk": "NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-typescript http://197.255.122.208:8090/api/openapi.json --output lib/mapi.ts"
+		"generate:sdk": "NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-typescript http://0.0.0.0:8090/api/openapi.json --output lib/mapi.ts"
 	},
 	"dependencies": {
 		"@auth0/nextjs-auth0": "^3.2.0",

@@ -33,6 +33,7 @@ import { StopIcon } from "../icons/stop-icon";
 import { DeleteIcon } from "../icons/delete-icon";
 import { TestModelModal } from "../modals/test-model-modal";
 import { AppModal } from "../modals";
+import { capitalize } from "../results/utils";
 
 // Jobs List
 const columns = [
@@ -42,6 +43,30 @@ const columns = [
 	{ name: "ACTIONS", uid: "actions" },
 	{ name: "CREATED AT", uid: "created" },
 ];
+
+enum ColorEnum {
+	success = "success",
+	primary = "primary",
+	secondary = "secondary",
+	error = "danger",
+	warning = "warning",
+}
+
+const JobStatusColorMap: {
+	[key: string]:
+		| "success"
+		| "primary"
+		| "secondary"
+		| "warning"
+		| "default"
+		| "danger"
+		| undefined;
+} = {
+	ready: ColorEnum.success,
+	occupied: ColorEnum.warning,
+	closed: ColorEnum.secondary,
+	initializing: ColorEnum.primary,
+};
 
 const RenderCell = (
 	columnKey: string | React.Key,
@@ -67,41 +92,39 @@ const RenderCell = (
 				</Tooltip>
 			);
 		case "results":
-			if (item.ready && !item.closed) return <Chip color="success">Ready</Chip>;
-			if (latestResult && latestResult.status === "running")
-				return <Chip color="warning">Running</Chip>;
-			if (latestResult && latestResult.status === "error")
-				return <Chip color="danger">Error</Chip>;
-			if (!item.ready) <Chip color="default">Not Ready</Chip>;
-			return <Chip color="secondary">Closed</Chip>;
+			return (
+				<Chip color={JobStatusColorMap[item.status!]}>
+					{capitalize(item.status!)}
+				</Chip>
+			);
 		case "actions":
 			return (
 				<ButtonGroup fullWidth>
 					<Button
 						onPress={() => openTrainModal(item)}
 						isIconOnly
-						isDisabled={!item.ready}
+						isDisabled={item.status !== "ready"}
 					>
 						<PlayIcon />
 					</Button>
 					<Button
 						onPress={() => openTestModal(item)}
 						isIconOnly
-						isDisabled={!item.ready}
+						isDisabled={item.status !== "ready"}
 					>
 						<TestIcon />
 					</Button>
 					<Button
 						onPress={() => openStopModal(item)}
 						isIconOnly
-						isDisabled={!latestResult}
+						isDisabled={item.status !== "occupied"}
 					>
 						<StopIcon />
 					</Button>
 					<Button
 						onPress={() => openDeleteModal(item)}
 						isIconOnly
-						isDisabled={!item.ready}
+						isDisabled={item.status !== "ready"}
 					>
 						<DeleteIcon />
 					</Button>

@@ -14,6 +14,15 @@ export interface paths {
      */
     get: operations["health_check_api_health_get"];
   };
+  "/api/grpc": {
+    /**
+     * Runners Check
+     * @description Checks the health of a project.
+     *
+     * It returns 200 if the project is healthy.
+     */
+    get: operations["runners_check_api_grpc_get"];
+  };
   "/api/models": {
     /**
      * Get all models
@@ -71,12 +80,12 @@ export interface paths {
      */
     post: operations["run_train_model_api_jobs_train_post"];
   };
-  "/api/jobs/{job_id}/upload/test": {
+  "/api/jobs/upload/test/{job_id}": {
     /**
      * Upload test data for model
      * @description Upload test data for model.
      */
-    post: operations["upload_test_data_api_jobs__job_id__upload_test_post"];
+    post: operations["upload_test_data_api_jobs_upload_test__job_id__post"];
   };
   "/api/jobs/test": {
     /**
@@ -169,8 +178,8 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    /** Body_upload_test_data_api_jobs__job_id__upload_test_post */
-    Body_upload_test_data_api_jobs__job_id__upload_test_post: {
+    /** Body_upload_test_data_api_jobs_upload_test__job_id__post */
+    Body_upload_test_data_api_jobs_upload_test__job_id__post: {
       /**
        * File
        * Format: binary
@@ -321,9 +330,11 @@ export interface components {
      *   "dataset_id": "uuid",
      *   "model_name": "string",
      *   "owner_id": "string",
+     *   "runner_id": "string",
      *   "parameters": "{\"json\": \"json\"}",
      *   "closed": true,
      *   "ready": true,
+     *   "status": "string",
      *   "created": "datetime",
      *   "modified": "datetime",
      *   "results": [
@@ -369,6 +380,8 @@ export interface components {
       model_name: string;
       /** Owner Id */
       owner_id: string;
+      /** Runner Id */
+      runner_id?: string;
       /**
        * Parameters
        * Format: json-string
@@ -385,6 +398,11 @@ export interface components {
        * @default false
        */
       ready?: boolean;
+      /**
+       * Status
+       * @default initializing
+       */
+      status?: string;
       /**
        * Created
        * Format: date-time
@@ -705,6 +723,22 @@ export interface operations {
     };
   };
   /**
+   * Runners Check
+   * @description Checks the health of a project.
+   *
+   * It returns 200 if the project is healthy.
+   */
+  runners_check_api_grpc_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+    };
+  };
+  /**
    * Get all models
    * @description Get all models.
    */
@@ -911,7 +945,7 @@ export interface operations {
    * Upload test data for model
    * @description Upload test data for model.
    */
-  upload_test_data_api_jobs__job_id__upload_test_post: {
+  upload_test_data_api_jobs_upload_test__job_id__post: {
     parameters: {
       path: {
         job_id: string;
@@ -919,7 +953,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "multipart/form-data": components["schemas"]["Body_upload_test_data_api_jobs__job_id__upload_test_post"];
+        "multipart/form-data": components["schemas"]["Body_upload_test_data_api_jobs_upload_test__job_id__post"];
       };
     };
     responses: {
