@@ -35,10 +35,8 @@ export const FilesTable = ({
 	resultId: string;
 }) => {
 	const { user } = useUser();
-	const [selected, setSelectedKey] = useState<Selection>(
-		new Set([files[0].name])
-	);
-	const [selectedValue, setSelectedValue] = useState(files[0].name);
+	const [selected, setSelectedKey] = useState<Selection>(new Set([]));
+	const [selectedValue, setSelectedValue] = useState("");
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const viewFileModal = (fileName: string) => {
