@@ -146,16 +146,20 @@ const ViewFileModal = ({
 	};
 
 	useEffect(() => {
-		if (status === "success") return;
-		setIsLoading(true);
 		if (lastIntervalId) clearInterval(lastIntervalId);
-		// if (status === "running"){
-		const intervalId = setInterval(() => {
-			fetchFileContent();
-		}, 5000);
-		setLastIntervalId(intervalId);
+		if (status === "running") {
+			setIsLoading(true);
+			// if (status === "running"){
+			const intervalId = setInterval(() => {
+				fetchFileContent();
+			}, 5000);
+			setLastIntervalId(intervalId);
 
-		return () => clearInterval(intervalId);
+			return () => clearInterval(intervalId);
+		} else {
+			fetchFileContent();
+		}
+		setIsLoading(false);
 	}, []);
 
 	return (
