@@ -47,7 +47,7 @@ export const downloadFile = (
 export const statusColorMap: Record<string, ChipProps["color"]> = {
 	running: "warning",
 	error: "danger",
-	done: "success",
+	success: "success",
 	stopped: "secondary",
 };
 

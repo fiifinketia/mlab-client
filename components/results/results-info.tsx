@@ -204,7 +204,11 @@ export const ResultInfo = ({ resultId }: { resultId: string }) => {
 										</div>
 									</Tab>
 									<Tab title="Files" key="3">
-										<FilesTable resultId={resultId} files={result.files} />
+										<FilesTable
+											resultId={resultId}
+											files={result.files}
+											status={result.status}
+										/>
 									</Tab>
 								</Tabs>
 							</div>

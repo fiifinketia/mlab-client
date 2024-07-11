@@ -30,9 +30,11 @@ const FILES_COLUMNS = [
 export const FilesTable = ({
 	files,
 	resultId,
+	status,
 }: {
 	files: ResultResponseFiles;
 	resultId: string;
+	status: string;
 }) => {
 	const { user } = useUser();
 	const [selected, setSelectedKey] = useState<Selection>(new Set([]));
@@ -101,6 +103,7 @@ export const FilesTable = ({
 									filename={selectedValue}
 									user={user!}
 									resultId={resultId}
+									status={status}
 								/>
 							</ModalBody>
 						</>
@@ -115,10 +118,12 @@ const ViewFileModal = ({
 	filename,
 	resultId,
 	user,
+	status,
 }: {
 	filename: string;
 	resultId: string;
 	user: UserProfile;
+	status: string;
 }) => {
 	const [fileContent, setFileContent] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -141,6 +146,7 @@ const ViewFileModal = ({
 	};
 
 	useEffect(() => {
+		if (status === "success") return;
 		setIsLoading(true);
 		if (lastIntervalId) clearInterval(lastIntervalId);
 		// if (status === "running"){
