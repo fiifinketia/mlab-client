@@ -87,7 +87,7 @@ export const FilesTable = ({
 			</Table>
 			{/* Display file content if selected */}
 			<AppModal
-				size="full"
+				size="5xl"
 				isOpen={isOpen}
 				onClose={onClose}
 				placement="top-center"
